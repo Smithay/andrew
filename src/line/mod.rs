@@ -9,16 +9,12 @@ pub struct Line {
 
 impl Line {
     pub fn new(pt1: (usize, usize), pt2: (usize, usize), color: [u8; 4]) -> Line {
-        Line {
-            pt1,
-            pt2,
-            color
-        }
+        Line { pt1, pt2, color }
     }
 }
 
 impl Draw for Line {
-    fn draw(&self, canvas: &mut[u8], canvas_size: (usize, usize)) {
+    fn draw(&self, canvas: &mut [u8], canvas_size: (usize, usize)) {
         if self.pt1.0 == self.pt2.0 {
             // Straight vertical line
             let (pt1, pt2) = if self.pt1.1 > self.pt2.1 {
@@ -32,7 +28,7 @@ impl Draw for Line {
                 }
             }
         } else if self.pt1.1 == self.pt2.1 {
-            // Straight horizontal line 
+            // Straight horizontal line
             let (pt1, pt2) = if self.pt1.0 > self.pt2.0 {
                 (self.pt2, self.pt1)
             } else {

@@ -85,11 +85,9 @@ fn main() {
         match event {
             KbEvent::Key {
                 state,
-                utf8: Some(text), ..
-            } => {
-                if text == "p" && state == KeyState::Pressed {
-                }
-            }
+                utf8: Some(text),
+                ..
+            } => if text == "p" && state == KeyState::Pressed {},
             _ => (),
         }
     });
@@ -139,17 +137,17 @@ fn redraw(
     // resize the pool if relevant
     pool.resize((4 * buf_x * buf_y) as usize)
         .expect("Failed to resize the memory pool.");
-    let mut buf: [u8; 4*240*320]  = [0; 4*240*320];
+    let mut buf: [u8; 4 * 240 * 320] = [0; 4 * 240 * 320];
     let line = andrew::Line {
-        pt1: (100, 220),
-        pt2: (200, 100),
+        pt1: (100, 100),
+        pt2: (200, 150),
         color: [255, 0, 0, 255],
     };
     // let rect = andrew::shape::Rectangle {
-        // pos: (200, 100),
-        // size: (100, 100),
-        // border: Some((2, [0, 0, 255, 255])),
-        // fill: Some([0, 255, 0, 255]),
+    // pos: (200, 100),
+    // size: (100, 100),
+    // border: Some((2, [0, 0, 255, 255])),
+    // fill: Some([0, 255, 0, 255]),
     // };
 
     line.draw(&mut buf, (320, 240));
