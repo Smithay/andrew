@@ -139,19 +139,19 @@ fn redraw(
         .expect("Failed to resize the memory pool.");
     let mut buf: [u8; 4 * 240 * 320] = [0; 4 * 240 * 320];
     let line = andrew::Line {
-        pt1: (100, 100),
-        pt2: (200, 150),
+        pt1: (200, 200),
+        pt2: (100, 100),
         color: [255, 0, 0, 255],
     };
-    // let rect = andrew::shape::Rectangle {
-    // pos: (200, 100),
-    // size: (100, 100),
-    // border: Some((2, [0, 0, 255, 255])),
-    // fill: Some([0, 255, 0, 255]),
-    // };
+    let rect = andrew::shape::Rectangle {
+        pos: (200, 100),
+        size: (100, 100),
+        border: Some((2, [0, 0, 255, 255])),
+        fill: Some([0, 255, 0, 255]),
+    };
 
     line.draw(&mut buf, (320, 240));
-    // rect.draw(&mut buf, (320, 240));
+    rect.draw(&mut buf, (320, 240));
     let _ = pool.seek(SeekFrom::Start(0));
     {
         let mut writer = BufWriter::new(&mut *pool);
