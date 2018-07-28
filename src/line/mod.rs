@@ -43,7 +43,6 @@ impl Draw for Line {
         } else {
             // Angled line
             for pt in bresenham::BresenhamLine::new(pt1, pt2).pts {
-                println!("{}, {}", pt.0, pt.1);
                 for c in 0..4 {
                     canvas[4 * (canvas_size.0 * pt.1 + pt.0) + c] = self.color[c];
                 }
