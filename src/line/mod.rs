@@ -1,7 +1,7 @@
 mod bresenham;
 use Draw;
 
-use std::cmp::{min, max};
+use std::cmp::{max, min};
 
 pub struct Line {
     pub pt1: (usize, usize),
@@ -11,6 +11,8 @@ pub struct Line {
 
 impl Line {
     pub fn new(pt1: (usize, usize), pt2: (usize, usize), color: [u8; 4]) -> Line {
+        let mut color = color;
+        color.reverse();
         Line { pt1, pt2, color }
     }
 }
@@ -26,7 +28,7 @@ impl Draw for Line {
             // Straight vertical line
             let (min_y, max_y) = match pt2.1 > pt1.1 {
                 true => (pt1.1, pt2.1),
-                false => (pt2.1, pt1.1)
+                false => (pt2.1, pt1.1),
             };
             for i in min_y..max_y + 1 {
                 for c in 0..4 {

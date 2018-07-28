@@ -137,21 +137,28 @@ fn redraw(
     // resize the pool if relevant
     pool.resize((4 * buf_x * buf_y) as usize)
         .expect("Failed to resize the memory pool.");
-    let mut buf: [u8; 4 * 240 * 320] = [0; 4 * 240 * 320];
-    let line = andrew::Line {
-        pt1: (200, 200),
-        pt2: (100, 100),
-        color: [255, 0, 0, 255],
+    let mut buf: Vec<u8> = vec![0; 4 * buf_x as usize * buf_y as usize];
+    let background = andrew::shape::Rectangle {
+        pos: (0, 0),
+        size: (buf_x as usize - 1, buf_y as usize - 1),
+        border: None,
+        fill: Some([255, 0, 0, 0]),
     };
-    let rect = andrew::shape::Rectangle {
-        pos: (200, 100),
-        size: (100, 100),
-        border: Some((2, [0, 0, 255, 255])),
-        fill: Some([0, 255, 0, 255]),
+    let test = andrew::shape::Rectangle {
+        pos: (50, 50),
+        size: (150, 150),
+        border: Some((10, [255, 255, 0, 0], Some(8))),
+        fill: Some([255, 0, 0, 0]),
     };
+    // let line = andrew::Line {
+    // pt1: (200, 200),
+    // pt2: (100, 100),
+    // color: [255, 0, 0, 255],
+    // };
 
-    line.draw(&mut buf, (320, 240));
-    rect.draw(&mut buf, (320, 240));
+    background.draw(&mut buf, (buf_x as usize, buf_y as usize));
+    test.draw(&mut buf, (buf_x as usize, buf_y as usize));
+    // line.draw(&mut buf, (buf_x as usize, buf_y as usize));
     let _ = pool.seek(SeekFrom::Start(0));
     {
         let mut writer = BufWriter::new(&mut *pool);
