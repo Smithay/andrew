@@ -1,7 +1,6 @@
 mod bresenham;
-use Draw;
-
-use std::cmp::{max, min};
+use Canvas;
+use Drawable;
 
 pub struct Line {
     pub pt1: (usize, usize),
@@ -17,8 +16,8 @@ impl Line {
     }
 }
 
-impl Draw for Line {
-    fn draw(&self, canvas: &mut [u8], canvas_size: (usize, usize)) {
+impl Drawable for Line {
+    fn draw(&self, canvas: &mut Canvas) {
         // Pt1.x will always be smaller then Pt2.x
         let (pt1, pt2) = match self.pt1.0 > self.pt2.0 {
             true => (self.pt2, self.pt1),
@@ -30,23 +29,23 @@ impl Draw for Line {
                 true => (pt1.1, pt2.1),
                 false => (pt2.1, pt1.1),
             };
-            for i in min_y..max_y + 1 {
+            for i in min_y..max_y {
                 for c in 0..4 {
-                    canvas[4 * (canvas_size.0 * i + pt1.0) + c] = self.color[c];
+                    canvas.buffer[canvas.stride * i + canvas.pixel_size * pt1.0 + c] = self.color[c];
                 }
             }
         } else if pt1.1 == pt2.1 {
             // Straight horizontal line
-            for i in pt1.0..pt2.0 + 1 {
+            for i in pt1.0..pt2.0  {
                 for c in 0..4 {
-                    canvas[4 * (canvas_size.0 * pt1.1 + i) + c] = self.color[c];
+                    canvas.buffer[canvas.stride * pt1.1 + canvas.pixel_size * i + c] = self.color[c];
                 }
             }
         } else {
             // Angled line
             for pt in bresenham::BresenhamLine::new(pt1, pt2).pts {
                 for c in 0..4 {
-                    canvas[4 * (canvas_size.0 * pt.1 + pt.0) + c] = self.color[c];
+                    canvas.buffer[canvas.stride * pt.1 + canvas.pixel_size * pt.0 + c] = self.color[c];
                 }
             }
         }

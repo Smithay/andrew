@@ -1,12 +1,12 @@
 extern crate andrew;
 extern crate smithay_client_toolkit as sctk;
 
-use andrew::Draw;
+use andrew::shape::rectangle;
+use andrew::line;
 
-use std::io::{BufWriter, Read, Seek, SeekFrom, Write};
+use std::io::{BufWriter, Seek, SeekFrom, Write};
 use std::sync::{Arc, Mutex};
 
-use sctk::data_device::{DataDevice, DndEvent, ReadPipe};
 use sctk::keyboard::{map_keyboard_auto, Event as KbEvent, KeyState};
 use sctk::utils::{DoubleMemPool, MemPool};
 use sctk::window::{BasicFrame, Event as WEvent, Window};
@@ -30,18 +30,6 @@ fn main() {
         .instantiate_auto::<wl_seat::WlSeat>()
         .unwrap()
         .implement(move |_, _| {});
-
-    let device = DataDevice::init_for_seat(
-        &env.data_device_manager,
-        &seat,
-        |event: DndEvent, ()| match event {
-            // we don't accept drag'n'drop
-            DndEvent::Enter {
-                offer: Some(offer), ..
-            } => offer.accept(None),
-            _ => (),
-        },
-    );
 
     // we need a window to receive things actually
     let mut dimensions = (320u32, 240u32);
@@ -138,33 +126,41 @@ fn redraw(
     pool.resize((4 * buf_x * buf_y) as usize)
         .expect("Failed to resize the memory pool.");
     let mut buf: Vec<u8> = vec![0; 4 * buf_x as usize * buf_y as usize];
-    let background = andrew::shape::Rectangle {
+    let mut canvas = andrew::Canvas::new(&mut buf, buf_x as usize, buf_y as usize, 4 * buf_x as usize);
+    let background = rectangle::Rectangle {
         pos: (0, 0),
         size: (buf_x as usize - 1, buf_y as usize - 1),
         border: None,
         fill: Some([255, 0, 0, 0]),
     };
-    let test = andrew::shape::Rectangle {
-        pos: (50, 50),
+    let test = rectangle::Rectangle {
+        pos: (0, 0),
         size: (150, 150),
-        border: Some((10, [255, 255, 0, 0], Some(8))),
-        fill: Some([255, 0, 0, 0]),
+        border: Some((
+            10,
+            [255, 255, 0, 0],
+            andrew::shape::rectangle::Sides::ALL,
+            Some(10),
+        )),
+        fill: Some([255, 0, 255, 0]),
     };
-    // let line = andrew::Line {
-    // pt1: (200, 200),
-    // pt2: (100, 100),
-    // color: [255, 0, 0, 255],
-    // };
+    let line = line::Line {
+        pt1: (10, 10),
+        pt2: (140, 140),
+        color: [255, 0, 0, 255],
+    };
 
-    background.draw(&mut buf, (buf_x as usize, buf_y as usize));
-    test.draw(&mut buf, (buf_x as usize, buf_y as usize));
-    // line.draw(&mut buf, (buf_x as usize, buf_y as usize));
+    canvas.draw(background);
+    canvas.draw(test);
+    canvas.draw(line);
+
     let _ = pool.seek(SeekFrom::Start(0));
     {
         let mut writer = BufWriter::new(&mut *pool);
-        let _ = writer.write(&buf);
+        writer.write(canvas.buffer).unwrap();
         let _ = writer.flush();
     }
+
     // get a buffer and attach it
     let new_buffer = pool.buffer(
         0,

@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Lucas Timmins <timmins.s.lucas@gmail.com>"]
 
 [dependencies]
+bitflags = "1.0.3"
 
 [dev-dependencies]
 smithay-client-toolkit = "0.2.6"
