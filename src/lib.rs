@@ -1,8 +1,9 @@
+extern crate line_drawing;
 #[macro_use]
 extern crate bitflags;
 
 pub mod line;
-pub mod shape;
+pub mod shapes;
 
 /// The Drawable trait allows object to be drawn to a buffer or canvas
 pub trait Drawable {
@@ -21,7 +22,10 @@ pub struct Canvas<'a> {
 
 impl<'a> Canvas<'a> {
     pub fn new(buffer: &'a mut [u8], width: usize, height: usize, stride: usize) -> Canvas<'a> {
-        assert!(stride % width == 0, "Incorrect Dimensions - Stride is not a multiple of width");
+        assert!(
+            stride % width == 0,
+            "Incorrect Dimensions - Stride is not a multiple of width"
+        );
         assert!(buffer.len() == stride * height);
         let pixel_size = stride / width;
         Canvas {
@@ -29,11 +33,11 @@ impl<'a> Canvas<'a> {
             width,
             height,
             stride,
-            pixel_size
+            pixel_size,
         }
     }
 
-    pub fn draw<D: Drawable>(&mut self, drawable: D) {
+    pub fn draw<D: Drawable>(&mut self, drawable: &D) {
         drawable.draw(self);
     }
 }

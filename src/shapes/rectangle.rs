@@ -8,7 +8,7 @@ bitflags! {
         const TOP = 0b0001;
         const BOTTOM = 0b0010;
         const LEFT = 0b0100;
-        const RIGHT = 01000;
+        const RIGHT = 0b1000;
         const ALL = Self::TOP.bits | Self::BOTTOM.bits | Self::LEFT.bits | Self::RIGHT.bits;
     }
 }
@@ -45,13 +45,14 @@ impl Rectangle {
                         (top_pos.0, top_pos.1 + i),
                         (top_pos.0 + top_size.0, top_pos.1 + i),
                         border.1,
+                        false,
                     ).draw(canvas);
                     if border.3.is_some() {
                         if border.2.contains(Sides::LEFT) {
-                            self.draw_rounded_corner(canvas, Corner::TopLeft);
+                            self.draw_rounded_corner(canvas, &Corner::TopLeft);
                         }
                         if border.2.contains(Sides::RIGHT) {
-                            self.draw_rounded_corner(canvas, Corner::TopRight);
+                            self.draw_rounded_corner(canvas, &Corner::TopRight);
                         }
                     }
                 }
@@ -62,13 +63,14 @@ impl Rectangle {
                         (bottom_pos.0, bottom_pos.1 + i),
                         (bottom_pos.0 + bottom_size.0, bottom_pos.1 + i),
                         border.1,
+                        false,
                     ).draw(canvas);
                     if border.3.is_some() {
                         if border.2.contains(Sides::LEFT) {
-                            self.draw_rounded_corner(canvas, Corner::BottomLeft);
+                            self.draw_rounded_corner(canvas, &Corner::BottomLeft);
                         }
                         if border.2.contains(Sides::RIGHT) {
-                            self.draw_rounded_corner(canvas, Corner::BottomRight);
+                            self.draw_rounded_corner(canvas, &Corner::BottomRight);
                         }
                     }
                 }
@@ -79,6 +81,7 @@ impl Rectangle {
                         (left_pos.0 + i, left_pos.1),
                         (left_pos.0 + i, left_pos.1 + left_size.1),
                         border.1,
+                        false,
                     ).draw(canvas);
                 }
                 // Right line
@@ -88,6 +91,7 @@ impl Rectangle {
                         (right_pos.0 + i, right_pos.1),
                         (right_pos.0 + i, right_pos.1 + right_size.1),
                         border.1,
+                        false,
                     ).draw(canvas);
                 }
             }
@@ -98,13 +102,12 @@ impl Rectangle {
         if let Some(fill) = self.fill {
             let (area_pos, area_size) = self.measure_area();
             for y in area_pos.1..area_pos.1 + area_size.1 + 1 {
-                Line::new((area_pos.0, y), (area_pos.0 + area_size.0, y), fill)
-                    .draw(canvas)
+                Line::new((area_pos.0, y), (area_pos.0 + area_size.0, y), fill, false).draw(canvas)
             }
         }
     }
 
-    fn draw_rounded_corner(&self, canvas: &mut Canvas, corner: Corner) {
+    fn draw_rounded_corner(&self, canvas: &mut Canvas, corner: &Corner) {
         let round_size = self.border.unwrap().3.unwrap();
         match corner {
             Corner::TopLeft => {
@@ -117,6 +120,7 @@ impl Rectangle {
                         (self.pos.0 + circle_width, y),
                         (self.pos.0 + round_size, y),
                         self.border.unwrap().1,
+                        false,
                     ).draw(canvas);
                 }
             }
@@ -130,6 +134,7 @@ impl Rectangle {
                         (self.pos.0 + self.size.0 - self.border.unwrap().0, y),
                         (self.pos.0 + self.size.0 - circle_width, y),
                         self.border.unwrap().1,
+                        false,
                     ).draw(canvas);
                 }
             }
@@ -143,6 +148,7 @@ impl Rectangle {
                         (self.pos.0 + circle_width, y),
                         (self.pos.0 + round_size, y),
                         self.border.unwrap().1,
+                        false,
                     ).draw(canvas);
                 }
             }
@@ -156,6 +162,7 @@ impl Rectangle {
                         (self.pos.0 + self.size.0 - self.border.unwrap().0, y),
                         (self.pos.0 + self.size.0 - circle_width, y),
                         self.border.unwrap().1,
+                        false,
                     ).draw(canvas);
                 }
             }
@@ -163,24 +170,24 @@ impl Rectangle {
     }
 
     fn measure_area(&self) -> ((usize, usize), (usize, usize)) {
-            let (mut area_pos, mut area_size) = (self.pos, self.size);
-            if let Some(border) = self.border {
-                if border.2.contains(Sides::TOP) {
-                    area_pos.1 += border.0;
-                    area_size.1 -= border.0;
-                }
-                if border.2.contains(Sides::BOTTOM) {
-                    area_size.1 -= border.0;
-                }
-                if border.2.contains(Sides::LEFT) {
-                    area_pos.0 += border.0;
-                    area_size.0 -= border.0;
-                }
-                if border.2.contains(Sides::RIGHT) {
-                    area_size.0 -= border.0;
-                }
+        let (mut area_pos, mut area_size) = (self.pos, self.size);
+        if let Some(border) = self.border {
+            if border.2.contains(Sides::TOP) {
+                area_pos.1 += border.0;
+                area_size.1 -= border.0;
             }
-            (area_pos, area_size)
+            if border.2.contains(Sides::BOTTOM) {
+                area_size.1 -= border.0;
+            }
+            if border.2.contains(Sides::LEFT) {
+                area_pos.0 += border.0;
+                area_size.0 -= border.0;
+            }
+            if border.2.contains(Sides::RIGHT) {
+                area_size.0 -= border.0;
+            }
+        }
+        (area_pos, area_size)
     }
 
     fn measure_border(&self, side: Sides) -> ((usize, usize), (usize, usize)) {
@@ -199,7 +206,7 @@ impl Rectangle {
                             border_size.0 -= round_size;
                         }
                     }
-                },
+                }
                 Sides::BOTTOM => {
                     border_pos = (self.pos.0, self.pos.1 + self.size.1 - border.0);
                     border_size = (self.size.0, border.0);
@@ -212,7 +219,7 @@ impl Rectangle {
                             border_size.0 -= round_size;
                         }
                     }
-                },
+                }
                 Sides::LEFT => {
                     border_pos = self.pos;
                     border_size = (border.0, self.size.1);
@@ -225,7 +232,7 @@ impl Rectangle {
                             border_size.1 -= round_size;
                         }
                     }
-                },
+                }
                 Sides::RIGHT => {
                     border_pos = (self.pos.0 + self.size.0 - border.0, self.pos.1);
                     border_size = (border.0, self.size.1);
@@ -239,7 +246,7 @@ impl Rectangle {
                         }
                     }
                 }
-                _ => ()
+                _ => (),
             }
         }
         (border_pos, border_size)

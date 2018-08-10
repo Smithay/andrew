@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Lucas Timmins <timmins.s.lucas@gmail.com>"]
 
 [dependencies]
+line_drawing = "0.7.0"
 bitflags = "1.0.3"
 
 [dev-dependencies]
