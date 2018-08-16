@@ -1,9 +1,11 @@
 extern crate line_drawing;
+extern crate rusttype;
 #[macro_use]
 extern crate bitflags;
 
 pub mod line;
 pub mod shapes;
+pub mod text;
 
 /// The Drawable trait allows object to be drawn to a buffer or canvas
 pub trait Drawable {
@@ -39,5 +41,27 @@ impl<'a> Canvas<'a> {
 
     pub fn draw<D: Drawable>(&mut self, drawable: &D) {
         drawable.draw(self);
+    }
+
+    pub fn draw_point(&mut self, x: usize, y: usize, color: [u8; 4]) {
+        for c in 0..3 {
+            let alpha = f32::from(color[3]) / 255.0;
+            let color_diff = (color[c] as isize
+                - self.buffer[self.stride * y + self.pixel_size * x + c] as isize)
+                as f32 * alpha;
+            let new_color = (f32::from(self.buffer[self.stride * y + self.pixel_size * x + c])
+                + color_diff) as u8;
+            self.buffer[self.stride * y + self.pixel_size * x + c] = new_color as u8;
+        }
+        self.buffer[self.stride * y + self.pixel_size * x + 3] = 255 as u8;
+    }
+
+    pub fn clear(&mut self) {
+        for i in 0..self.width * self.height {
+            for c in 0..3 {
+                self.buffer[i + c] = 0x00;
+            }
+            self.buffer[i + 3] = 0xFF;
+        }
     }
 }

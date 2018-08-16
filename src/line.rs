@@ -46,20 +46,14 @@ impl Drawable for Line {
             };
             if pt1.0 < canvas.width {
                 for i in min_y..min(max_y, canvas.height) {
-                    for c in 0..4 {
-                        canvas.buffer[canvas.stride * i + canvas.pixel_size * pt1.0 + c] =
-                            self.color[c];
-                    }
+                    canvas.draw_point(pt1.0, i, self.color);
                 }
             }
         } else if pt1.1 == pt2.1 {
             // Straight horizontal line
             if max(pt1.1, pt2.1) < canvas.height {
                 for i in pt1.0..min(pt2.0, canvas.width) {
-                    for c in 0..4 {
-                        canvas.buffer[canvas.stride * pt1.1 + canvas.pixel_size * i + c] =
-                            self.color[c];
-                    }
+                    canvas.draw_point(i, pt1.1, self.color);
                 }
             }
         } else if self.antialiased {
@@ -68,17 +62,10 @@ impl Drawable for Line {
                 (pt1.0 as f32, pt1.1 as f32),
                 (pt2.0 as f32, pt2.1 as f32),
             ) {
-                if x < canvas.width as isize - 1 && y < canvas.height as isize - 1 {
-                    canvas.buffer[canvas.stride * y as usize + canvas.pixel_size * x as usize] =
-                        (255.0 * coverage) as u8;
-                    canvas.buffer
-                        [canvas.stride * y as usize + canvas.pixel_size * x as usize + 1] =
-                        (255.0 * coverage) as u8;
-                    canvas.buffer
-                        [canvas.stride * y as usize + canvas.pixel_size * x as usize + 2] =
-                        (255.0 * coverage) as u8;
-                    canvas.buffer
-                        [canvas.stride * y as usize + canvas.pixel_size * x as usize + 3] = 255;
+                if x < canvas.width as isize && y < canvas.height as isize {
+                    let mut color = self.color;
+                    color[3] = (f32::from(color[3]) * coverage) as u8;
+                    canvas.draw_point(x as usize, y as usize, color);
                 }
             }
         } else {
@@ -87,12 +74,8 @@ impl Drawable for Line {
                 (pt1.0 as isize, pt1.1 as isize),
                 (pt2.0 as isize, pt2.1 as isize),
             ) {
-                if y < canvas.height as isize && x < canvas.width as isize {
-                    for c in 0..4 {
-                        canvas.buffer
-                            [canvas.stride * y as usize + canvas.pixel_size * x as usize + c] =
-                            self.color[c];
-                    }
+                if x < canvas.width as isize && y < canvas.height as isize {
+                    canvas.draw_point(x as usize, y as usize, self.color)
                 }
             }
         }

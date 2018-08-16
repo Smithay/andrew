@@ -3,6 +3,7 @@ extern crate smithay_client_toolkit as sctk;
 
 use andrew::line;
 use andrew::shapes::rectangle;
+use andrew::text;
 
 use std::io::{BufWriter, Seek, SeekFrom, Write};
 use std::sync::{Arc, Mutex};
@@ -136,22 +137,39 @@ fn redraw(
         border: None,
         fill: Some([0, 0, 0, 255]),
     };
-    let test = rectangle::Rectangle {
+    let rectangle = rectangle::Rectangle {
         pos: (0, 0),
         size: (150, 150),
         border: Some((10, [0, 0, 255, 255], rectangle::Sides::ALL, Some(10))),
         fill: Some([0, 255, 0, 255]),
     };
     let line = line::Line {
-        pt1: (10, 10),
-        pt2: (20, 20),
+        pt1: (200, 10),
+        pt2: (240, 140),
         color: [0, 0, 255, 255],
         antialiased: true,
     };
+    let mut text = text::Text::new(
+        (63, 69),
+        [0, 0, 0, 255],
+        "/usr/share/fonts/TTF/DejaVuSerif.ttf",
+        12.0,
+        2.0,
+        "hello world",
+    );
+    text.pos = (75 - (text.get_width() / 2), 69);
+    let text_box = rectangle::Rectangle {
+        pos: text.pos,
+        size: (text.get_width(), 12),
+        border: Some((1, [0, 0, 255, 255], rectangle::Sides::ALL, None)),
+        fill: None,
+    };
 
     canvas.draw(&background);
-    canvas.draw(&test);
+    canvas.draw(&rectangle);
     canvas.draw(&line);
+    canvas.draw(&text_box);
+    canvas.draw(&text);
 
     let _ = pool.seek(SeekFrom::Start(0));
     {
