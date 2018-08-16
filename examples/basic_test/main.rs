@@ -1,4 +1,5 @@
 extern crate andrew;
+extern crate font_loader;
 extern crate smithay_client_toolkit as sctk;
 
 use andrew::line;
@@ -152,15 +153,20 @@ fn redraw(
     let mut text = text::Text::new(
         (63, 69),
         [0, 0, 0, 255],
-        "/usr/share/fonts/TTF/DejaVuSerif.ttf",
+        font_loader::system_fonts::get(
+            &font_loader::system_fonts::FontPropertyBuilder::new()
+                .monospace()
+                .build(),
+        ).unwrap()
+            .0,
         12.0,
         2.0,
         "hello world",
     );
     text.pos = (75 - (text.get_width() / 2), 69);
     let text_box = rectangle::Rectangle {
-        pos: text.pos,
-        size: (text.get_width(), 12),
+        pos: (text.pos.0 - 3, text.pos.1),
+        size: (text.get_width() + 6, 12),
         border: Some((1, [0, 0, 255, 255], rectangle::Sides::ALL, None)),
         fill: None,
     };

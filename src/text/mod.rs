@@ -1,4 +1,4 @@
-use rusttype::{point, Font, Scale, VMetrics};
+use rusttype::{point, Font, Scale, SharedBytes, VMetrics};
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
@@ -14,22 +14,25 @@ pub struct Text<'a> {
     pub v_metrics: VMetrics,
 }
 
+pub fn load_font_file<P: Into<PathBuf>>(path: P) -> Vec<u8> {
+    let mut data: Vec<u8> = Vec::new();
+    let mut file = File::open(path.into()).expect("Could not open font file");
+    file.read_to_end(&mut data)
+        .expect("Could not read font file");
+    data
+}
+
 impl<'a> Text<'a> {
-    pub fn new<P: Into<PathBuf>, T: Into<String>>(
+    pub fn new<P: Into<SharedBytes<'a>>, T: Into<String>>(
         pos: (usize, usize),
         color: [u8; 4],
-        font_path: P,
+        font_data: P,
         height: f32,
         width_scale: f32,
         text: T,
     ) -> Text<'a> {
         let text = text.into();
         // Create font
-        let mut font_data: Vec<u8> = Vec::new();
-        let mut font_file = File::open(font_path.into()).expect("Could not open font file");
-        font_file
-            .read_to_end(&mut font_data)
-            .expect("Could not read font file");
         let font = Font::from_bytes(font_data).expect("Error constructing Font");
         // Create scale
         let scale = Scale {

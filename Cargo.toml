@@ -10,3 +10,4 @@ rusttype = "0.6.3"
 
 [dev-dependencies]
 smithay-client-toolkit = "0.2.6"
+font-loader = "0.7.0"
