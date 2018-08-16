@@ -114,8 +114,8 @@ impl Rectangle {
                 for y in self.pos.1..self.pos.1 + round_size {
                     let circle_width = round_size
                         - ((round_size as f32).powi(2)
-                            - ((round_size - (y - self.pos.1)) as f32).powi(2))
-                            .sqrt() as usize;
+                            - ((round_size - (y - self.pos.1) - 1) as f32).powi(2))
+                            .sqrt().round() as usize;
                     Line::new(
                         (self.pos.0 + circle_width, y),
                         (self.pos.0 + round_size, y),
@@ -128,22 +128,22 @@ impl Rectangle {
                 for y in self.pos.1..self.pos.1 + round_size {
                     let circle_width = round_size
                         - ((round_size as f32).powi(2)
-                            - ((round_size - (y - self.pos.1)) as f32).powi(2))
-                            .sqrt() as usize;
+                            - ((round_size - (y - self.pos.1) - 1) as f32).powi(2))
+                            .sqrt().round() as usize;
                     Line::new(
-                        (self.pos.0 + self.size.0 - self.border.unwrap().0, y),
-                        (self.pos.0 + self.size.0 - circle_width, y),
+                        (self.pos.0 + self.size.0 - self.border.unwrap().0 - 1, y),
+                        (self.pos.0 + self.size.0 - circle_width - 1, y),
                         self.border.unwrap().1,
                         false,
                     ).draw(canvas);
                 }
             }
             Corner::BottomLeft => {
-                for y in self.pos.1 + self.size.1 - round_size - 1..self.pos.1 + self.size.1 {
+                for y in self.pos.1 + self.size.1 - round_size..self.pos.1 + self.size.1 {
                     let circle_width = round_size
                         - ((round_size as f32).powi(2)
-                            - ((y - (self.pos.1 + self.size.1 - round_size - 1)) as f32).powi(2))
-                            .sqrt() as usize;
+                            - ((y - (self.pos.1 + self.size.1 - round_size)) as f32).powi(2))
+                            .sqrt().round() as usize;
                     Line::new(
                         (self.pos.0 + circle_width, y),
                         (self.pos.0 + round_size, y),
@@ -153,14 +153,14 @@ impl Rectangle {
                 }
             }
             Corner::BottomRight => {
-                for y in self.pos.1 + self.size.1 - round_size - 1..self.pos.1 + self.size.1 {
+                for y in self.pos.1 + self.size.1 - round_size..self.pos.1 + self.size.1 {
                     let circle_width = round_size
                         - ((round_size as f32).powi(2)
-                            - ((y - (self.pos.1 + self.size.1 - round_size - 1)) as f32).powi(2))
-                            .sqrt() as usize;
+                            - ((y - (self.pos.1 + self.size.1 - round_size)) as f32).powi(2))
+                            .sqrt().round() as usize;
                     Line::new(
-                        (self.pos.0 + self.size.0 - self.border.unwrap().0, y),
-                        (self.pos.0 + self.size.0 - circle_width, y),
+                        (self.pos.0 + self.size.0 - self.border.unwrap().0 - 1, y),
+                        (self.pos.0 + self.size.0 - circle_width - 1, y),
                         self.border.unwrap().1,
                         false,
                     ).draw(canvas);

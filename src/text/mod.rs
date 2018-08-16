@@ -59,16 +59,14 @@ impl<'a> Text<'a> {
         for glyph in glyphs {
             if let Some(bounding_box) = glyph.pixel_bounding_box() {
                 glyph.draw(|x, y, v| {
-                    let x = x as usize + self.pos.0;
-                    let y = y as usize + self.pos.1;
+                    let x = x as usize + self.pos.0 + bounding_box.min.x as usize;
+                    let y = y as usize + self.pos.1 + bounding_box.min.y as usize;
 
-                    let mut color = self.color;
-                    color[3] = (f32::from(color[3]) * v) as u8;
-                    canvas.draw_point(
-                        x + bounding_box.min.x as usize,
-                        y + bounding_box.min.y as usize,
-                        color,
-                    );
+                    if x < canvas.width && y < canvas.height {
+                        let mut color = self.color;
+                        color[3] = (f32::from(color[3]) * v) as u8;
+                        canvas.draw_point(x, y, color);
+                    }
                 });
             }
         }

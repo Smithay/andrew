@@ -141,7 +141,7 @@ fn redraw(
     let rectangle = rectangle::Rectangle {
         pos: (0, 0),
         size: (150, 150),
-        border: Some((10, [0, 0, 255, 255], rectangle::Sides::ALL, Some(10))),
+        border: Some((15, [0, 0, 255, 255], rectangle::Sides::ALL, Some(15))),
         fill: Some([0, 255, 0, 255]),
     };
     let line = line::Line {
