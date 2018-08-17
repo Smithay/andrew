@@ -32,10 +32,14 @@ impl Rectangle {
         if let Some(border) = self.border {
             if let Some(round_size) = border.3 {
                 for i in 0..border.0 {
-                    let circle_width = round_size
-                        - ((round_size as f32).powi(2) - ((round_size - i - 1) as f32).powi(2))
-                            .sqrt()
-                            .round() as usize;
+                    let rounding_space = if i < round_size {
+                        round_size
+                            - ((round_size as f32).powi(2) - ((round_size - i - 1) as f32).powi(2))
+                                .sqrt()
+                                .round() as usize
+                    } else {
+                        0
+                    };
                     // Top line
                     if border.2.contains(Sides::TOP) {
                         if border.3.is_some() {
@@ -43,8 +47,8 @@ impl Rectangle {
                             if border.2.contains(Sides::RIGHT) {}
                         }
                         Line::new(
-                            (self.pos.0 + circle_width, self.pos.1 + i),
-                            (self.pos.0 + self.size.0 - circle_width, self.pos.1 + i),
+                            (self.pos.0 + rounding_space, self.pos.1 + i),
+                            (self.pos.0 + self.size.0 - rounding_space, self.pos.1 + i),
                             border.1,
                             false,
                         ).draw(canvas);
@@ -56,9 +60,9 @@ impl Rectangle {
                             if border.2.contains(Sides::RIGHT) {}
                         }
                         Line::new(
-                            (self.pos.0 + circle_width, self.pos.1 + self.size.1 - i),
+                            (self.pos.0 + rounding_space, self.pos.1 + self.size.1 - i),
                             (
-                                self.pos.0 + self.size.0 - circle_width,
+                                self.pos.0 + self.size.0 - rounding_space,
                                 self.pos.1 + self.size.1 - i,
                             ),
                             border.1,
@@ -68,8 +72,8 @@ impl Rectangle {
                     // Left line
                     if border.2.contains(Sides::LEFT) {
                         Line::new(
-                            (self.pos.0 + i, self.pos.1 + circle_width),
-                            (self.pos.0 + i, self.pos.1 + self.size.1 - circle_width),
+                            (self.pos.0 + i, self.pos.1 + rounding_space),
+                            (self.pos.0 + i, self.pos.1 + self.size.1 - rounding_space),
                             border.1,
                             false,
                         ).draw(canvas);
@@ -77,10 +81,10 @@ impl Rectangle {
                     // Right line
                     if border.2.contains(Sides::RIGHT) {
                         Line::new(
-                            (self.pos.0 + self.size.0 - i, self.pos.1 + circle_width),
+                            (self.pos.0 + self.size.0 - i, self.pos.1 + rounding_space),
                             (
                                 self.pos.0 + self.size.0 - i,
-                                self.pos.1 + self.size.1 - circle_width,
+                                self.pos.1 + self.size.1 - rounding_space,
                             ),
                             border.1,
                             false,
