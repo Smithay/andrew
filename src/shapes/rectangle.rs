@@ -5,17 +5,22 @@ use Drawable;
 bitflags! {
     /// The Sides bitflag presents the sides of a rectangle
     pub struct Sides: u32 {
+        /// The top side of the rectangle
         const TOP = 0b0001;
+        /// The bottom side of the rectangle
         const BOTTOM = 0b0010;
+        /// The left side of the rectangle
         const LEFT = 0b0100;
+        /// The right side of the rectangle
         const RIGHT = 0b1000;
+        /// All sides of the rectangle
         const ALL = Self::TOP.bits | Self::BOTTOM.bits | Self::LEFT.bits | Self::RIGHT.bits;
     }
 }
 
-/// The rectangle struct is a drawable object that represents a triangle
+/// A drawable object that represents a rectangle
 pub struct Rectangle {
-    /// Position of the top-left corner of rectangle, relative to the buffer
+    /// Position of the top-left corner of rectangle
     pub pos: (usize, usize),
     /// The size of the rectangle to be drawn, the border will be contained within this size
     pub size: (usize, usize),
@@ -28,6 +33,7 @@ pub struct Rectangle {
 }
 
 impl Rectangle {
+    /// Creates a new Rectangle object
     pub fn new(pos: (usize, usize), size: (usize, usize), border: Option<(usize, [u8; 4], Sides, Option<usize>)>, fill: Option<[u8; 4]>) -> Rectangle {
         Rectangle {
             pos,

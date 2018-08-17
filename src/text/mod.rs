@@ -5,15 +5,23 @@ use std::path::PathBuf;
 use Canvas;
 use Drawable;
 
+/// A drawable object that represents text
 pub struct Text<'a> {
+    /// The position of the text on the canvas
     pub pos: (usize, usize),
+    /// The color of the text
     pub color: [u8; 4],
+    /// The text that is rendered to the canvas on draw
     pub text: String,
+    /// The font used in rendering the text
     pub font: Font<'a>,
+    /// The scale that is applied to the text
     pub scale: Scale,
+    /// The vertical metrics of the text
     pub v_metrics: VMetrics,
 }
 
+/// Loads a font file into a `Vec<u8>`
 pub fn load_font_file<P: Into<PathBuf>>(path: P) -> Vec<u8> {
     let mut data: Vec<u8> = Vec::new();
     let mut file = File::open(path.into()).expect("Could not open font file");
@@ -23,6 +31,7 @@ pub fn load_font_file<P: Into<PathBuf>>(path: P) -> Vec<u8> {
 }
 
 impl<'a> Text<'a> {
+    /// Creates a new Text object
     pub fn new<P: Into<SharedBytes<'a>>, T: Into<String>>(
         pos: (usize, usize),
         color: [u8; 4],
@@ -72,6 +81,7 @@ impl<'a> Text<'a> {
         }
     }
 
+    /// Calculates the width in pixels of the text
     pub fn get_width(&self) -> usize {
         let glyphs: Vec<_> = self
             .font

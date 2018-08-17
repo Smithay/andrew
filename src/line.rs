@@ -4,14 +4,20 @@ use line_drawing::XiaolinWu;
 use Canvas;
 use Drawable;
 
+/// A drawable object that represents a line
 pub struct Line {
+    /// The first point of the line
     pub pt1: (usize, usize),
+    /// The second point of the line
     pub pt2: (usize, usize),
+    /// The color of the line
     pub color: [u8; 4],
+    /// Decides whether the line will be antialiased
     pub antialiased: bool,
 }
 
 impl Line {
+    /// Creates a new Line object
     pub fn new(
         pt1: (usize, usize),
         pt2: (usize, usize),
