@@ -144,12 +144,7 @@ fn redraw(
         Some((15, [0, 0, 255, 255], rectangle::Sides::ALL, Some(10))),
         Some([0, 255, 0, 255]),
     );
-    let line = line::Line::new(
-        (200, 20),
-        (250, 100),
-        [255, 0, 0, 255],
-        true,
-    );
+    let line = line::Line::new((200, 20), (250, 100), [255, 0, 0, 255], true);
     let mut text = text::Text::new(
         (63, 69),
         [0, 0, 0, 255],
