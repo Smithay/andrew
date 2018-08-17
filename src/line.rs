@@ -29,7 +29,17 @@ impl Line {
 
 impl Drawable for Line {
     fn draw(&self, canvas: &mut Canvas) {
-        if self.antialiased {
+        if !self.antialiased || self.pt1.0 == self.pt2.0 || self.pt1.1 == self.pt2.1 {
+            // Angled line without antialias
+            for (x, y) in Bresenham::new(
+                (self.pt1.0 as isize, self.pt1.1 as isize),
+                (self.pt2.0 as isize, self.pt2.1 as isize),
+            ) {
+                if x < canvas.width as isize && y < canvas.height as isize {
+                    canvas.draw_point(x as usize, y as usize, self.color)
+                }
+            }
+        } else {
             // Angled line with antialias
             for ((x, y), coverage) in XiaolinWu::<f32, isize>::new(
                 (self.pt1.0 as f32, self.pt1.1 as f32),
@@ -38,17 +48,7 @@ impl Drawable for Line {
                 if x < canvas.width as isize && y < canvas.height as isize {
                     let mut color = self.color;
                     color[3] = (f32::from(color[3]) * coverage) as u8;
-                    canvas.draw_point(x as usize, y as usize, color);
-                }
-            }
-        } else {
-            // Angled line without antialias
-            for (x, y) in Bresenham::new(
-                (self.pt1.0 as isize, self.pt1.1 as isize),
-                (self.pt2.0 as isize, self.pt2.1 as isize),
-            ) {
-                if x < canvas.width as isize && y < canvas.height as isize {
-                    canvas.draw_point(x as usize, y as usize, self.color)
+                    canvas.draw_point(x as usize, y as usize, color)
                 }
             }
         }

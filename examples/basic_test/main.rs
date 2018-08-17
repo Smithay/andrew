@@ -134,7 +134,7 @@ fn redraw(
         andrew::Canvas::new(&mut buf, buf_x as usize, buf_y as usize, 4 * buf_x as usize);
     let background = rectangle::Rectangle {
         pos: (0, 0),
-        size: (buf_x as usize - 1, buf_y as usize - 1),
+        size: (buf_x as usize, buf_y as usize),
         border: None,
         fill: Some([0, 0, 0, 255]),
     };
@@ -145,9 +145,9 @@ fn redraw(
         fill: Some([0, 255, 0, 255]),
     };
     let line = line::Line {
-        pt1: (200, 10),
-        pt2: (240, 140),
-        color: [0, 0, 255, 255],
+        pt1: (200, 20),
+        pt2: (250, 100),
+        color: [255, 0, 0, 255],
         antialiased: true,
     };
     let mut text = text::Text::new(
