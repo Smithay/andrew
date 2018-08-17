@@ -28,6 +28,15 @@ pub struct Rectangle {
 }
 
 impl Rectangle {
+    pub fn new(pos: (usize, usize), size: (usize, usize), border: Option<(usize, [u8; 4], Sides, Option<usize>)>, fill: Option<[u8; 4]>) -> Rectangle {
+        Rectangle {
+            pos,
+            size,
+            border,
+            fill
+        }
+    }
+
     fn draw_borders(&self, canvas: &mut Canvas) {
         if let Some(border) = self.border {
             if let Some(round_size) = border.3 {

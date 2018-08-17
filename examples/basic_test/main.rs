@@ -132,24 +132,24 @@ fn redraw(
     let mut buf: Vec<u8> = vec![0; 4 * buf_x as usize * buf_y as usize];
     let mut canvas =
         andrew::Canvas::new(&mut buf, buf_x as usize, buf_y as usize, 4 * buf_x as usize);
-    let background = rectangle::Rectangle {
-        pos: (0, 0),
-        size: (buf_x as usize, buf_y as usize),
-        border: None,
-        fill: Some([0, 0, 0, 255]),
-    };
-    let rectangle = rectangle::Rectangle {
-        pos: (0, 0),
-        size: (150, 150),
-        border: Some((15, [0, 0, 255, 255], rectangle::Sides::ALL, Some(5))),
-        fill: Some([0, 255, 0, 255]),
-    };
-    let line = line::Line {
-        pt1: (200, 20),
-        pt2: (250, 100),
-        color: [255, 0, 0, 255],
-        antialiased: true,
-    };
+    let background = rectangle::Rectangle::new(
+        (0, 0),
+        (buf_x as usize, buf_y as usize),
+        None,
+        Some([0, 0, 0, 255]),
+    );
+    let rectangle = rectangle::Rectangle::new(
+        (0, 0),
+        (150, 150),
+        Some((15, [0, 0, 255, 255], rectangle::Sides::ALL, Some(10))),
+        Some([0, 255, 0, 255]),
+    );
+    let line = line::Line::new(
+        (200, 20),
+        (250, 100),
+        [255, 0, 0, 255],
+        true,
+    );
     let mut text = text::Text::new(
         (63, 69),
         [0, 0, 0, 255],
@@ -164,12 +164,12 @@ fn redraw(
         "hello world",
     );
     text.pos = (75 - (text.get_width() / 2), 69);
-    let text_box = rectangle::Rectangle {
-        pos: (text.pos.0 - 3, text.pos.1),
-        size: (text.get_width() + 6, 12),
-        border: Some((1, [0, 0, 255, 255], rectangle::Sides::ALL, None)),
-        fill: None,
-    };
+    let text_box = rectangle::Rectangle::new(
+        (text.pos.0 - 3, text.pos.1),
+        (text.get_width() + 6, 12),
+        Some((1, [0, 0, 255, 255], rectangle::Sides::ALL, None)),
+        None,
+    );
 
     canvas.draw(&background);
     canvas.draw(&rectangle);
