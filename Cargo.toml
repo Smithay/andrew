@@ -2,6 +2,12 @@
 name = "andrew"
 version = "0.1.0"
 authors = ["Lucas Timmins <timmins.s.lucas@gmail.com>"]
+description = "The andrew crate provides convenient drawing of objects such as shapes, lines and text to buffers"
+repository = "https://github.com/trimental/andrew"
+readme = "README.md"
+keywords = ["draw", "buffer", "shapes", "lines", "pixels"]
+categories = ["rendering", "multimedia::images"]
+license = "MIT"
 
 [dependencies]
 line_drawing = "0.7.0"
