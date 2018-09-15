@@ -12,7 +12,8 @@ license = "MIT"
 [dependencies]
 line_drawing = "0.7.0"
 bitflags = "1.0.3"
-rusttype = "0.7.2"
+rusttype = "=0.7.1"
+stb_truetype = "=0.2.2"
 
 [dev-dependencies]
 smithay-client-toolkit = "0.2.6"
