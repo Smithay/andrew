@@ -73,16 +73,18 @@ fn main() {
     let mut pools = DoubleMemPool::new(&env.shm).expect("Failed to create a memory pool !");
     let mut buffer = None;
 
-    let _keyboard = map_keyboard_auto(seat.get_keyboard().unwrap(), move |event: KbEvent, _| {
-        match event {
-            KbEvent::Key {
-                state,
-                utf8: Some(text),
-                ..
-            } => if text == "p" && state == KeyState::Pressed {},
-            _ => (),
-        }
-    });
+    let _keyboard =
+        map_keyboard_auto(
+            seat.get_keyboard().unwrap(),
+            move |event: KbEvent, _| match event {
+                KbEvent::Key {
+                    state,
+                    utf8: Some(text),
+                    ..
+                } => if text == "p" && state == KeyState::Pressed {},
+                _ => (),
+            },
+        );
 
     if !env.shell.needs_configure() {
         // initial draw to bootstrap on wl_shell
@@ -153,7 +155,7 @@ fn redraw(
                 .monospace()
                 .build(),
         ).unwrap()
-            .0,
+        .0,
         12.0,
         2.0,
         "hello world",
@@ -180,8 +182,8 @@ fn redraw(
     }
 
     // get a buffer and attach it
-    let new_buffer =
-        pool.buffer(
+    let new_buffer = pool
+        .buffer(
             0,
             buf_x as i32,
             buf_y as i32,

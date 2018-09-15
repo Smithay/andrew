@@ -62,7 +62,8 @@ impl<'a> Canvas<'a> {
             let alpha = f32::from(color[3]) / 255.0;
             let color_diff = (color[c] as isize
                 - self.buffer[self.stride * y + self.pixel_size * x + c] as isize)
-                as f32 * alpha;
+                as f32
+                * alpha;
             let new_color = (f32::from(self.buffer[self.stride * y + self.pixel_size * x + c])
                 + color_diff) as u8;
             self.buffer[self.stride * y + self.pixel_size * x + c] = new_color as u8;
