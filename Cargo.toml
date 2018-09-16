@@ -16,5 +16,5 @@ rusttype = "=0.7.1"
 stb_truetype = "=0.2.2"
 
 [dev-dependencies]
-smithay-client-toolkit = "0.2.6"
+smithay-client-toolkit = "0.3.0"
 font-loader = "0.7.0"
