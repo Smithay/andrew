@@ -69,7 +69,8 @@ fn main() {
 
     window.new_seat(&seat);
 
-    let mut pools = DoubleMemPool::new(&env.shm, |_, _|{}).expect("Failed to create a memory pool !");
+    let mut pools =
+        DoubleMemPool::new(&env.shm, |_, _| {}).expect("Failed to create a memory pool !");
 
     let _keyboard =
         map_keyboard_auto(
@@ -118,11 +119,7 @@ fn main() {
     }
 }
 
-fn redraw(
-    pool: &mut MemPool,
-    surface: &Proxy<wl_surface::WlSurface>,
-    (buf_x, buf_y): (u32, u32),
-) {
+fn redraw(pool: &mut MemPool, surface: &Proxy<wl_surface::WlSurface>, (buf_x, buf_y): (u32, u32)) {
     // resize the pool if relevant
     pool.resize((4 * buf_x * buf_y) as usize)
         .expect("Failed to resize the memory pool.");
@@ -177,14 +174,13 @@ fn redraw(
     }
 
     // get a buffer and attach it
-    let new_buffer = pool
-        .buffer(
-            0,
-            buf_x as i32,
-            buf_y as i32,
-            4 * buf_x as i32,
-            wl_shm::Format::Argb8888,
-        );
+    let new_buffer = pool.buffer(
+        0,
+        buf_x as i32,
+        buf_y as i32,
+        4 * buf_x as i32,
+        wl_shm::Format::Argb8888,
+    );
     surface.attach(Some(&new_buffer), 0, 0);
     surface.commit();
 }
