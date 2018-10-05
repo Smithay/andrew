@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.1.2 -- 2018-10-04
+
+- Add basic/experimental support for fontconfig in `andrew::text::fontconfig`
+
 ## 0.1.1 -- 2018-09-17
 
 - Manage dependencies to maintain rust 1.22 compatibility

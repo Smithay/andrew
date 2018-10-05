@@ -1,12 +1,12 @@
 extern crate andrew;
-extern crate font_loader;
 extern crate smithay_client_toolkit as sctk;
 
 use andrew::line;
 use andrew::shapes::rectangle;
 use andrew::text;
+use andrew::text::fontconfig;
 
-use std::io::{BufWriter, Seek, SeekFrom, Write};
+use std::io::{BufWriter, Read, Seek, SeekFrom, Write};
 use std::sync::{Arc, Mutex};
 
 use sctk::keyboard::{map_keyboard_auto, Event as KbEvent, KeyState};
@@ -139,15 +139,21 @@ fn redraw(pool: &mut MemPool, surface: &Proxy<wl_surface::WlSurface>, (buf_x, bu
         Some([0, 255, 0, 255]),
     );
     let line = line::Line::new((200, 20), (250, 100), [255, 0, 0, 255], true);
+    let mut font_data = Vec::new();
+    ::std::fs::File::open(
+        fontconfig::FontConfig::new()
+            .unwrap()
+            .get_regular_family_fonts("sans".to_string())
+            .unwrap()
+            .get(0)
+            .unwrap(),
+    ).unwrap()
+    .read_to_end(&mut font_data)
+    .unwrap();
     let mut text = text::Text::new(
         (63, 69),
         [0, 0, 0, 255],
-        font_loader::system_fonts::get(
-            &font_loader::system_fonts::FontPropertyBuilder::new()
-                .monospace()
-                .build(),
-        ).unwrap()
-        .0,
+        font_data,
         12.0,
         2.0,
         "hello world",
