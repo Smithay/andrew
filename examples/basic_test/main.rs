@@ -143,7 +143,7 @@ fn redraw(pool: &mut MemPool, surface: &Proxy<wl_surface::WlSurface>, (buf_x, bu
     ::std::fs::File::open(
         fontconfig::FontConfig::new()
             .unwrap()
-            .get_regular_family_fonts("sans".to_string())
+            .get_regular_family_fonts("sans")
             .unwrap()
             .get(0)
             .unwrap(),

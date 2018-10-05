@@ -13,9 +13,10 @@ fn get_config() -> Option<PathBuf> {
     let xdg_dirs = BaseDirectories::with_prefix("fontconfig").unwrap();
     xdg_dirs.find_config_file("fonts.conf").or_else(|| {
         let config = Path::new("/etc/fonts/fonts.conf");
-        match config.exists() {
-            true => Some(config.into()),
-            false => None,
+        if config.exists() {
+            Some(config.into())
+        } else {
+            None
         }
     })
 }
@@ -46,7 +47,7 @@ fn parse_config(path: &Path) -> Vec<(Vec<String>, String)> {
         }
         buf.clear();
     }
-    return data;
+    data
 }
 
 /// Represents the main fontconfig config file
@@ -58,9 +59,12 @@ pub struct FontConfig {
 impl FontConfig {
     /// Creates a new FontConfig object by looking for the fontconfig config file
     pub fn new() -> Result<FontConfig, ()> {
-        let location = PathBuf::from(get_config().ok_or_else(|| ())?);
+        let location = get_config().ok_or(())?;
         let data = parse_config(&location);
-        Ok(FontConfig { location, data })
+        Ok(FontConfig {
+            location: location.to_path_buf(),
+            data,
+        })
     }
 
     /// Returns the location of the fontconfig config file being used
@@ -124,10 +128,7 @@ impl FontConfig {
     }
 
     /// Returns the paths of regular fonts belonging to a specific family installed on the system
-    pub fn get_regular_family_fonts(
-        &self,
-        family: String,
-    ) -> Result<Vec<PathBuf>, ::std::io::Error> {
+    pub fn get_regular_family_fonts(&self, family: &str) -> Result<Vec<PathBuf>, ::std::io::Error> {
         let fonts_dir_files = self.get_font_dir_files()?;
         let mut fonts: Vec<PathBuf> = Vec::new();
         for dir in fonts_dir_files {
@@ -136,7 +137,7 @@ impl FontConfig {
             file.read_to_string(&mut buf)?;
 
             for line in buf.lines().filter(|l| l.find("medium-r-normal").is_some()) {
-                if let Some(split) = line.find(" ") {
+                if let Some(split) = line.find(' ') {
                     let name = line[..split].to_string();
                     let settings = line[split..].to_string();
                     let mut char_buf = String::new();
