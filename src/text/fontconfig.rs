@@ -1,10 +1,10 @@
+use std::fs::File;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 
 use xdg::BaseDirectories;
 
-use quick_xml::events::Event;
-use quick_xml::Reader;
+use xml::reader::{EventReader, XmlEvent};
 
 use walkdir::WalkDir;
 
@@ -22,32 +22,30 @@ fn get_config() -> Option<PathBuf> {
 }
 
 fn parse_config(path: &Path) -> Vec<(Vec<String>, String)> {
-    let mut reader = Reader::from_file(path).unwrap();
-    let reader = reader.trim_text(true);
-    let mut buf = Vec::new();
+    let config_file = File::open(path).unwrap();
+    let parser = EventReader::new(config_file);
     let mut tracking_tags: Vec<String> = Vec::new();
-    let mut data: Vec<(Vec<String>, String)> = Vec::new();
+    let mut xml_data: Vec<(Vec<String>, String)> = Vec::new();
 
-    loop {
-        match reader.read_event(&mut buf) {
-            Ok(Event::Start(tag)) => {
-                let tag = reader.decode(&tag).to_string();
-                tracking_tags.push(tag);
+    for e in parser {
+        match e {
+            Ok(XmlEvent::StartElement { name, .. }) => {
+                tracking_tags.push(name.to_string());
             }
-            Ok(Event::Text(text)) => {
-                let text = reader.decode(&text).to_string();
-                data.push((tracking_tags.clone(), text));
+            Ok(XmlEvent::CData(data)) => {
+                xml_data.push((tracking_tags.clone(), data));
             }
-            Ok(Event::End(_)) => {
+            Ok(XmlEvent::Characters(data)) => {
+                xml_data.push((tracking_tags.clone(), data));
+            }
+            Ok(XmlEvent::EndElement { .. }) => {
                 tracking_tags.pop();
             }
-            Err(e) => panic!("Error at position {}", e),
-            Ok(Event::Eof) => break,
-            _ => (),
+            Err(e) => panic!(e),
+            _ => {}
         }
-        buf.clear();
     }
-    data
+    xml_data
 }
 
 /// Represents the main fontconfig config file

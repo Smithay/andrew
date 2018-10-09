@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Move from `quick-xml` to `xml-rs` dependency 
+
 ## 0.1.2 -- 2018-10-04
 
 - Add basic/experimental support for fontconfig in `andrew::text::fontconfig`
