@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.1.4 -- 2018-11-10
+
+- Remove rusttype version restriction
+
 ## 0.1.3 -- 2018-10-09
 
 - Move from `quick-xml` to `xml-rs` dependency 
