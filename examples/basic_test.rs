@@ -52,7 +52,8 @@ fn main() {
         if replace {
             *next_action = Some(evt);
         }
-    }).expect("Failed to create a window !");
+    })
+    .expect("Failed to create a window !");
 
     window.new_seat(&seat);
 
@@ -129,7 +130,8 @@ fn redraw(pool: &mut MemPool, surface: &Proxy<wl_surface::WlSurface>, (buf_x, bu
             .unwrap()
             .get(0)
             .unwrap(),
-    ).unwrap()
+    )
+    .unwrap()
     .read_to_end(&mut font_data)
     .unwrap();
     let mut text = text::Text::new(

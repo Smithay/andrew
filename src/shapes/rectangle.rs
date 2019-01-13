@@ -71,7 +71,8 @@ impl Rectangle {
                         (self.pos.0 + self.size.0 - rounding_space, self.pos.1 + i),
                         border.1,
                         false,
-                    ).draw(canvas);
+                    )
+                    .draw(canvas);
                 }
                 // Bottom line
                 if border.2.contains(Sides::BOTTOM) && canvas.width > rounding_space * 2 {
@@ -83,7 +84,8 @@ impl Rectangle {
                         ),
                         border.1,
                         false,
-                    ).draw(canvas);
+                    )
+                    .draw(canvas);
                 }
                 // Left line
                 if border.2.contains(Sides::LEFT) && canvas.height > rounding_space * 2 {
@@ -92,7 +94,8 @@ impl Rectangle {
                         (self.pos.0 + i, self.pos.1 + self.size.1 - rounding_space),
                         border.1,
                         false,
-                    ).draw(canvas);
+                    )
+                    .draw(canvas);
                 }
                 // Right line
                 if border.2.contains(Sides::RIGHT) && canvas.height > rounding_space * 2 {
@@ -104,7 +107,8 @@ impl Rectangle {
                         ),
                         border.1,
                         false,
-                    ).draw(canvas);
+                    )
+                    .draw(canvas);
                 }
             }
         }
