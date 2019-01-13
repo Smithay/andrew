@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.1.5 -- 2019-01-13
+
+- Fix drawing of characters with negative bounding boxes
+- Fix error in `get_width()` for text without any characters
+
 ## 0.1.4 -- 2018-11-10
 
 - Remove rusttype version restriction
