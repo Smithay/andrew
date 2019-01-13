@@ -71,8 +71,8 @@ impl<'a> Text<'a> {
         for glyph in glyphs {
             if let Some(bounding_box) = glyph.pixel_bounding_box() {
                 glyph.draw(|x, y, v| {
-                    let x = x as usize + self.pos.0 + bounding_box.min.x as usize;
-                    let y = y as usize + self.pos.1 + bounding_box.min.y as usize;
+                    let x = ((x as usize + self.pos.0) as i32 + bounding_box.min.x) as usize;
+                    let y = ((y as usize + self.pos.1) as i32 + bounding_box.min.y) as usize;
 
                     if x < canvas.width && y < canvas.height {
                         let mut color = self.color;
