@@ -28,5 +28,9 @@ script:
    if [ -n "$BUILD_FMT" ]; then
      cargo fmt -- --check
    else
+     cargo update
+     cargo update -p stb_truetype --precise 0.2.2
+     cargo update -p rusttype --precise 0.7.1
+     cargo update -p lazy_static --precise 1.1.0
      cargo check
    fi
