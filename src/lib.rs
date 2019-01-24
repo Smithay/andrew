@@ -62,17 +62,22 @@ impl<'a> Canvas<'a> {
 
     /// Draws a pixel at the x and y coordinate
     pub fn draw_point(&mut self, x: usize, y: usize, color: [u8; 4]) {
-        for c in 0..3 {
-            let alpha = f32::from(color[3]) / 255.0;
-            let color_diff = (color[c] as isize
-                - self.buffer[self.stride * y + self.pixel_size * x + c] as isize)
-                as f32
-                * alpha;
-            let new_color = (f32::from(self.buffer[self.stride * y + self.pixel_size * x + c])
-                + color_diff) as u8;
-            self.buffer[self.stride * y + self.pixel_size * x + c] = new_color as u8;
+        let base = self.stride * y + self.pixel_size * x;
+        if color[3] == 255 {
+            self.buffer[base] = color[0];
+            self.buffer[base + 1] = color[1];
+            self.buffer[base + 2] = color[2];
+            self.buffer[base + 3] = color[3];
+        } else {
+            for c in 0..3 {
+                let alpha = f32::from(color[3]) / 255.0;
+                let color_diff =
+                    (color[c] as isize - self.buffer[base + c] as isize) as f32 * alpha;
+                let new_color = (f32::from(self.buffer[base + c]) + color_diff) as u8;
+                self.buffer[base + c] = new_color as u8;
+            }
+            self.buffer[base + 3] = 255 as u8;
         }
-        self.buffer[self.stride * y + self.pixel_size * x + 3] = 255 as u8;
     }
 
     /// Clears the entire canvas buffer by zeroing it

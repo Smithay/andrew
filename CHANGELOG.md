@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Only calculate alpha overlay when drawing colors without a non-max alpha value for performance
+
 ## 0.1.5 -- 2019-01-13
 
 - Fix drawing of characters with negative bounding boxes
