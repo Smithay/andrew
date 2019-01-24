@@ -1,3 +1,5 @@
+use std::cmp::min;
+
 use line_drawing::Bresenham;
 use line_drawing::XiaolinWu;
 
@@ -35,14 +37,34 @@ impl Line {
 
 impl Drawable for Line {
     fn draw(&self, canvas: &mut Canvas) {
-        if !self.antialiased || self.pt1.0 == self.pt2.0 || self.pt1.1 == self.pt2.1 {
-            // Angled line without antialias
-            for (x, y) in Bresenham::new(
-                (self.pt1.0 as isize, self.pt1.1 as isize),
-                (self.pt2.0 as isize, self.pt2.1 as isize),
-            ) {
-                if x < canvas.width as isize && y < canvas.height as isize {
-                    canvas.draw_point(x as usize, y as usize, self.color)
+        if !self.antialiased {
+            if self.pt1.0 == self.pt2.0 && self.pt1.0 < canvas.width {
+                let (min_y, max_y) = if self.pt1.1 > self.pt2.1 {
+                    (self.pt2.1, self.pt1.1)
+                } else {
+                    (self.pt1.1, self.pt2.1)
+                };
+                for y in min_y..min(max_y, canvas.height - 1) + 1 {
+                    canvas.draw_point(self.pt1.0, y, self.color)
+                }
+            } else if self.pt1.1 == self.pt2.1 && self.pt1.1 < canvas.height {
+                let (min_x, max_x) = if self.pt1.0 > self.pt2.0 {
+                    (self.pt2.0, self.pt1.0)
+                } else {
+                    (self.pt1.0, self.pt2.0)
+                };
+                for x in min_x..min(max_x, canvas.width - 1) + 1 {
+                    canvas.draw_point(x, self.pt1.1, self.color)
+                }
+            } else {
+                // Angled line without antialias
+                for (x, y) in Bresenham::new(
+                    (self.pt1.0 as isize, self.pt1.1 as isize),
+                    (self.pt2.0 as isize, self.pt2.1 as isize),
+                ) {
+                    if x < canvas.width as isize && y < canvas.height as isize {
+                        canvas.draw_point(x as usize, y as usize, self.color)
+                    }
                 }
             }
         } else {
