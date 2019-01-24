@@ -1,15 +1,10 @@
 extern crate andrew;
 extern crate smithay_client_toolkit as sctk;
 
-use andrew::line;
-use andrew::shapes::rectangle;
-use andrew::text;
-use andrew::text::fontconfig;
-
-use std::io::{BufWriter, Read, Seek, SeekFrom, Write};
+use std::io::{Read, Seek, SeekFrom, Write};
 use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
 
-use sctk::keyboard::{map_keyboard_auto, Event as KbEvent, KeyState};
 use sctk::utils::{DoubleMemPool, MemPool};
 use sctk::window::{ConceptFrame, Event as WEvent, Window};
 use sctk::Environment;
@@ -18,6 +13,10 @@ use sctk::reexports::client::protocol::wl_compositor::RequestsTrait as Composito
 use sctk::reexports::client::protocol::wl_surface::RequestsTrait as SurfaceRequests;
 use sctk::reexports::client::protocol::{wl_shm, wl_surface};
 use sctk::reexports::client::{Display, Proxy};
+
+use andrew::shapes::rectangle;
+use andrew::text;
+use andrew::text::fontconfig;
 
 fn main() {
     let (display, mut event_queue) =
@@ -29,8 +28,7 @@ fn main() {
         .instantiate_auto(|seat| seat.implement(|_, _| {}, ()))
         .unwrap();
 
-    // we need a window to receive things actually
-    let mut dimensions = (320u32, 240u32);
+    let mut dimensions = (600, 400);
     let surface = env
         .compositor
         .create_surface(|surface| surface.implement(|_, _| {}, ()))
@@ -59,19 +57,20 @@ fn main() {
 
     let mut pools = DoubleMemPool::new(&env.shm, || {}).expect("Failed to create a memory pool !");
 
-    let _keyboard = map_keyboard_auto(&seat, move |event: KbEvent, _| match event {
-        KbEvent::Key {
-            state,
-            utf8: Some(text),
-            ..
-        } => if text == "p" && state == KeyState::Pressed {},
-        _ => (),
-    });
+    let mut font_data = Vec::new();
+    ::std::fs::File::open(
+        &fontconfig::FontConfig::new()
+            .unwrap()
+            .get_regular_family_fonts("sans")
+            .unwrap()[0],
+    )
+    .unwrap()
+    .read_to_end(&mut font_data)
+    .unwrap();
 
     if !env.shell.needs_configure() {
-        // initial draw to bootstrap on wl_shell
         if let Some(pool) = pools.pool() {
-            redraw(pool, window.surface(), dimensions);
+            redraw(pool, window.surface(), dimensions, &font_data);
         }
         window.refresh();
     }
@@ -90,80 +89,114 @@ fn main() {
                 }
                 window.refresh();
                 if let Some(pool) = pools.pool() {
-                    redraw(pool, window.surface(), dimensions);
+                    redraw(pool, window.surface(), dimensions, &font_data);
                 }
             }
             None => {}
         }
 
         display.flush().unwrap();
-
         event_queue.dispatch().unwrap();
     }
 }
 
-fn redraw(pool: &mut MemPool, surface: &Proxy<wl_surface::WlSurface>, (buf_x, buf_y): (u32, u32)) {
-    // resize the pool if relevant
-    pool.resize((4 * buf_x * buf_y) as usize)
+fn redraw(
+    pool: &mut MemPool,
+    surface: &Proxy<wl_surface::WlSurface>,
+    dimensions: (u32, u32),
+    font_data: &[u8],
+) {
+    let (buf_x, buf_y) = (dimensions.0 as usize, dimensions.1 as usize);
+
+    pool.resize(4 * buf_x * buf_y)
         .expect("Failed to resize the memory pool.");
-    let mut buf: Vec<u8> = vec![0; 4 * buf_x as usize * buf_y as usize];
-    let mut canvas =
-        andrew::Canvas::new(&mut buf, buf_x as usize, buf_y as usize, 4 * buf_x as usize);
-    let background = rectangle::Rectangle::new(
-        (0, 0),
-        (buf_x as usize, buf_y as usize),
-        None,
-        Some([0, 0, 0, 255]),
-    );
+
+    let mut buf: Vec<u8> = vec![255; 4 * buf_x * buf_y];
+    let mut canvas = andrew::Canvas::new(&mut buf, buf_x, buf_y, 4 * buf_x);
+
+    println!("______________");
+    let mut total_dur = Duration::new(0, 0);
+
+    // Draw background
+    let (block_w, block_h) = (buf_x / 20, buf_y / 20);
+    for block_y in 0..21 {
+        for block_x in 0..21 {
+            let color = if (block_x + (block_y % 2)) % 2 == 0 {
+                [0, 0, 0, 255]
+            } else {
+                [255, 255, 255, 255]
+            };
+
+            let block = rectangle::Rectangle::new(
+                (block_w * block_x, block_h * block_y),
+                (block_w, block_h),
+                None,
+                Some(color),
+            );
+            let timer = Instant::now();
+            canvas.draw(&block);
+            total_dur += timer.elapsed()
+        }
+    }
+    println!("Background draw time: {:?}", total_dur);
+
     let rectangle = rectangle::Rectangle::new(
-        (0, 0),
-        (150, 150),
-        Some((15, [0, 0, 255, 255], rectangle::Sides::ALL, Some(10))),
-        Some([0, 255, 0, 255]),
+        (buf_x / 30, buf_y / 4),
+        (buf_x - (buf_x / 30) * 2, buf_y - buf_y / 2),
+        Some((
+            15,
+            [45, 20, 170, 255],
+            rectangle::Sides::TOP ^ rectangle::Sides::BOTTOM,
+            Some(10),
+        )),
+        Some([45, 20, 170, 255]),
     );
-    let line = line::Line::new((200, 20), (250, 100), [255, 0, 0, 255], true);
-    let mut font_data = Vec::new();
-    ::std::fs::File::open(
-        fontconfig::FontConfig::new()
-            .unwrap()
-            .get_regular_family_fonts("sans")
-            .unwrap()
-            .get(0)
-            .unwrap(),
-    )
-    .unwrap()
-    .read_to_end(&mut font_data)
-    .unwrap();
+    let mut timer = Instant::now();
+    canvas.draw(&rectangle);
+    println!("Rectangle draw time: {:?}", timer.elapsed());
+    total_dur += timer.elapsed();
+
+    let text_h = buf_x as f32 / 80.;
+    let text_hh = text_h / 2.;
     let mut text = text::Text::new(
         (63, 69),
-        [0, 0, 0, 255],
+        [255, 255, 255, 255],
         font_data,
-        12.0,
+        text_h,
         2.0,
-        "hello world",
+        "“Life is the art of drawing without an eraser.” - John W. Gardner",
     );
-    text.pos = (75 - (text.get_width() / 2), 69);
+    text.pos = (
+        buf_x / 2 - text.get_width() / 2,
+        buf_y / 2 - text_hh as usize,
+    );
+
     let text_box = rectangle::Rectangle::new(
-        (text.pos.0 - 3, text.pos.1),
-        (text.get_width() + 6, 12),
-        Some((1, [0, 0, 255, 255], rectangle::Sides::ALL, None)),
+        (
+            buf_x / 2 - text.get_width() / 2 - 10,
+            buf_y / 2 - text_hh as usize - 10,
+        ),
+        (text.get_width() + 20, text_h as usize + 20),
+        Some((3, [255, 255, 255, 255], rectangle::Sides::ALL, Some(5))),
         None,
     );
 
-    canvas.draw(&background);
-    canvas.draw(&rectangle);
-    canvas.draw(&line);
+    timer = Instant::now();
     canvas.draw(&text_box);
+    println!("Text box draw time: {:?}", timer.elapsed());
+    total_dur += timer.elapsed();
+
+    timer = Instant::now();
     canvas.draw(&text);
+    println!("Text draw time: {:?}", timer.elapsed());
+    total_dur += timer.elapsed();
 
-    let _ = pool.seek(SeekFrom::Start(0));
-    {
-        let mut writer = BufWriter::new(&mut *pool);
-        writer.write(canvas.buffer).unwrap();
-        let _ = writer.flush();
-    }
+    println!("Total draw time: {:?}", total_dur);
 
-    // get a buffer and attach it
+    pool.seek(SeekFrom::Start(0)).unwrap();
+    pool.write_all(canvas.buffer).unwrap();
+    pool.flush().unwrap();
+
     let new_buffer = pool.buffer(
         0,
         buf_x as i32,
