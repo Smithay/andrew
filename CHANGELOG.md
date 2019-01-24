@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.6 -- 2019-01-24
+
 - Faster drawing of horizontal and verticle lines by precomputing line boundaries
 - Only calculate alpha overlay when drawing colors without a non-max alpha value for performance
 

@@ -1,6 +1,6 @@
 [package]
 name = "andrew"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Lucas Timmins <timmins.s.lucas@gmail.com>"]
 description = "The andrew crate provides convenient drawing of objects such as shapes, lines and text to buffers"
 repository = "https://github.com/trimental/andrew"
