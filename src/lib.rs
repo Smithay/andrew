@@ -22,6 +22,26 @@ pub trait Drawable {
     fn draw(&self, canvas: &mut Canvas);
 }
 
+/// Describes an endianness (aka byte order)
+#[derive(Debug, PartialEq)]
+pub enum Endian {
+    /// Little Endian
+    Little,
+    /// Big Endian
+    Big,
+}
+
+impl Endian {
+    /// Returns the native endianness
+    pub fn native() -> Endian {
+        if cfg!(target_endian = "little") {
+            Endian::Little
+        } else {
+            Endian::Big
+        }
+    }
+}
+
 /// The canvas object acts as a wrapper around a buffer, providing information and functions
 /// for drawing
 pub struct Canvas<'a> {
@@ -35,11 +55,19 @@ pub struct Canvas<'a> {
     pub stride: usize,
     /// The number of bytes contained in each pixel
     pub pixel_size: usize,
+    /// The endianness of the canvas
+    pub endianness: Endian,
 }
 
 impl<'a> Canvas<'a> {
     /// Creates a new canvas object
-    pub fn new(buffer: &'a mut [u8], width: usize, height: usize, stride: usize) -> Canvas<'a> {
+    pub fn new(
+        buffer: &'a mut [u8],
+        width: usize,
+        height: usize,
+        stride: usize,
+        endianness: Endian,
+    ) -> Canvas<'a> {
         assert!(
             stride % width == 0,
             "Incorrect Dimensions - Stride is not a multiple of width"
@@ -52,6 +80,7 @@ impl<'a> Canvas<'a> {
             height,
             stride,
             pixel_size,
+            endianness,
         }
     }
 
@@ -63,20 +92,36 @@ impl<'a> Canvas<'a> {
     /// Draws a pixel at the x and y coordinate
     pub fn draw_point(&mut self, x: usize, y: usize, color: [u8; 4]) {
         let base = self.stride * y + self.pixel_size * x;
-        if color[3] == 255 {
+        if self.endianness == Endian::Little {
+            if color[0] == 255 {
+                self.buffer[base + 3] = color[0];
+                self.buffer[base + 2] = color[1];
+                self.buffer[base + 1] = color[2];
+                self.buffer[base] = color[3];
+            } else {
+                for c in 0..3 {
+                    let alpha = f32::from(color[0]) / 255.0;
+                    let color_diff =
+                        (color[3 - c] as isize - self.buffer[base + c] as isize) as f32 * alpha;
+                    let new_color = (f32::from(self.buffer[base + c]) + color_diff) as u8;
+                    self.buffer[base + c] = new_color as u8;
+                }
+                self.buffer[base + 3] = 255 as u8;
+            }
+        } else if color[0] == 255 {
             self.buffer[base] = color[0];
             self.buffer[base + 1] = color[1];
             self.buffer[base + 2] = color[2];
             self.buffer[base + 3] = color[3];
         } else {
-            for c in 0..3 {
-                let alpha = f32::from(color[3]) / 255.0;
+            for c in 1..4 {
+                let alpha = f32::from(color[0]) / 255.0;
                 let color_diff =
                     (color[c] as isize - self.buffer[base + c] as isize) as f32 * alpha;
                 let new_color = (f32::from(self.buffer[base + c]) + color_diff) as u8;
                 self.buffer[base + c] = new_color as u8;
             }
-            self.buffer[base + 3] = 255 as u8;
+            self.buffer[base] = 255 as u8;
         }
     }
 

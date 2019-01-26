@@ -112,7 +112,8 @@ fn redraw(
         .expect("Failed to resize the memory pool.");
 
     let mut buf: Vec<u8> = vec![255; 4 * buf_x * buf_y];
-    let mut canvas = andrew::Canvas::new(&mut buf, buf_x, buf_y, 4 * buf_x);
+    let mut canvas =
+        andrew::Canvas::new(&mut buf, buf_x, buf_y, 4 * buf_x, andrew::Endian::native());
 
     println!("______________");
     let mut total_dur = Duration::new(0, 0);
@@ -122,7 +123,7 @@ fn redraw(
     for block_y in 0..21 {
         for block_x in 0..21 {
             let color = if (block_x + (block_y % 2)) % 2 == 0 {
-                [0, 0, 0, 255]
+                [255, 0, 0, 0]
             } else {
                 [255, 255, 255, 255]
             };
@@ -145,11 +146,11 @@ fn redraw(
         (buf_x - (buf_x / 30) * 2, buf_y - buf_y / 2),
         Some((
             15,
-            [45, 20, 170, 255],
+            [255, 170, 20, 45],
             rectangle::Sides::TOP ^ rectangle::Sides::BOTTOM,
             Some(10),
         )),
-        Some([45, 20, 170, 255]),
+        Some([255, 170, 20, 45]),
     );
     let mut timer = Instant::now();
     canvas.draw(&rectangle);

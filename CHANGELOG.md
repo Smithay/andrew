@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.2.0 -- 2019-01-26
+
+- **[Breaking]** Canvas is now endian aware and will draw to the buffer in the endianness of the `Endian` its created with
+
 ## 0.1.6 -- 2019-01-24
 
 - Faster drawing of horizontal and verticle lines by precomputing line boundaries

@@ -76,7 +76,7 @@ impl<'a> Text<'a> {
 
                     if x < canvas.width && y < canvas.height {
                         let mut color = self.color;
-                        color[3] = (f32::from(color[3]) * v) as u8;
+                        color[0] = (f32::from(color[0]) * v) as u8;
                         canvas.draw_point(x, y, color);
                     }
                 });
