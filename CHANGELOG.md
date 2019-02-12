@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix `get_width()` for texts that start and end with spaces
+
 ## 0.2.0 -- 2019-01-26
 
 - **[Breaking]** Canvas is now endian aware and will draw to the buffer in the endianness of the `Endian` its created with

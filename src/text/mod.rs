@@ -92,11 +92,23 @@ impl<'a> Text<'a> {
             .collect();
         let min_x = glyphs
             .first()
-            .map(|g| g.pixel_bounding_box().unwrap().min.x)
+            .map(|g| {
+                if let Some(bb) = g.pixel_bounding_box() {
+                    bb.min.x
+                } else {
+                    g.position().x as i32
+                }
+            })
             .unwrap_or(0);
         let max_x = glyphs
             .last()
-            .map(|g| g.pixel_bounding_box().unwrap().max.x)
+            .map(|g| {
+                if let Some(bb) = g.pixel_bounding_box() {
+                    bb.max.x
+                } else {
+                    (g.position().x + g.unpositioned().h_metrics().advance_width) as i32
+                }
+            })
             .unwrap_or(0);
         (max_x - min_x) as usize
     }
