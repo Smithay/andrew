@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.2.1 -- 2019-03-29
+
 - Fix `get_width()` for texts that start and end with spaces
 
 ## 0.2.0 -- 2019-01-26
