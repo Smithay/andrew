@@ -9,10 +9,8 @@ use sctk::utils::{DoubleMemPool, MemPool};
 use sctk::window::{ConceptFrame, Event as WEvent, Window};
 use sctk::Environment;
 
-use sctk::reexports::client::protocol::wl_compositor::RequestsTrait as CompositorRequests;
-use sctk::reexports::client::protocol::wl_surface::RequestsTrait as SurfaceRequests;
 use sctk::reexports::client::protocol::{wl_shm, wl_surface};
-use sctk::reexports::client::{Display, Proxy};
+use sctk::reexports::client::{Display, NewProxy};
 
 use andrew::shapes::rectangle;
 use andrew::text;
@@ -25,13 +23,13 @@ fn main() {
 
     let seat = env
         .manager
-        .instantiate_auto(|seat| seat.implement(|_, _| {}, ()))
+        .instantiate_range(1, 6, NewProxy::implement_dummy)
         .unwrap();
 
     let mut dimensions = (600, 400);
     let surface = env
         .compositor
-        .create_surface(|surface| surface.implement(|_, _| {}, ()))
+        .create_surface(NewProxy::implement_dummy)
         .unwrap();
 
     let next_action = Arc::new(Mutex::new(None::<WEvent>));
@@ -102,7 +100,7 @@ fn main() {
 
 fn redraw(
     pool: &mut MemPool,
-    surface: &Proxy<wl_surface::WlSurface>,
+    surface: &wl_surface::WlSurface,
     dimensions: (u32, u32),
     font_data: &[u8],
 ) {
