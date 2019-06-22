@@ -15,7 +15,7 @@ bitflags = "1.0.3"
 rusttype = "0.7.1"
 xdg = "2.1.0"
 xml-rs = "0.8.0"
-walkdir = "2.2.2"
+walkdir = "2.2.8"
 
 [dev-dependencies]
 smithay-client-toolkit = "0.4.0"
