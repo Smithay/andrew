@@ -10,12 +10,12 @@ categories = ["rendering", "multimedia::images"]
 license = "MIT"
 
 [dependencies]
-line_drawing = "0.7.0"
-bitflags = "1.0.3"
-rusttype = "0.7.1"
-xdg = "2.1.0"
+line_drawing = "0.8.0"
+bitflags = "1.1.0"
+rusttype = "0.8.0"
+xdg = "2.2.0"
 xml-rs = "0.8.0"
-walkdir = "2.2.8"
+walkdir = "2.2.9"
 
 [dev-dependencies]
-smithay-client-toolkit = "0.6.2"
+smithay-client-toolkit = "0.6.4"
