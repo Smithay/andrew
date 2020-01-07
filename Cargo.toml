@@ -11,8 +11,8 @@ license = "MIT"
 
 [dependencies]
 line_drawing = "0.8.0"
-bitflags = "1.1.0"
-rusttype = "0.8.0"
+bitflags = "1.2.1"
+rusttype = "0.8.2"
 xdg = "2.2.0"
 xml-rs = "0.8.0"
 walkdir = "2.2.9"
