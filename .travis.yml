@@ -3,11 +3,11 @@ sudo: false
 
 cache: cargo
 
-os: 
+os:
   - linux
 
 rust:
-  - 1.22.0
+  - 1.36.0
   - stable
   - beta
   - nightly
@@ -20,7 +20,7 @@ matrix:
     - rust: stable
       env: BUILD_FMT=1
 
-before_script: 
+before_script:
  - if [ -n "$BUILD_FMT" ]; then rustup component add rustfmt-preview; fi
 
 script:
