@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Raised MSRV to `1.36.0`.
+- Upgraded dependency versions.
+
 ## 0.2.1 -- 2019-03-29
 
 - Fix `get_width()` for texts that start and end with spaces
