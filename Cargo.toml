@@ -18,4 +18,4 @@ xml-rs = "0.8.3"
 walkdir = "2.3.1"
 
 [dev-dependencies]
-smithay-client-toolkit = "0.6.4"
+smithay-client-toolkit = "0.9.1"
