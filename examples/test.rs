@@ -2,58 +2,51 @@ extern crate andrew;
 extern crate smithay_client_toolkit as sctk;
 
 use std::io::{Read, Seek, SeekFrom, Write};
-use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use sctk::utils::{DoubleMemPool, MemPool};
-use sctk::window::{ConceptFrame, Event as WEvent, Window};
-use sctk::Environment;
-
-use sctk::reexports::client::protocol::{wl_shm, wl_surface};
-use sctk::reexports::client::{Display, NewProxy};
+use sctk::reexports::client::protocol::{wl_seat::WlSeat, wl_shm, wl_surface};
+use sctk::shm::{DoubleMemPool, MemPool};
+use sctk::window::{ConceptFrame, Event as WEvent};
 
 use andrew::shapes::rectangle;
 use andrew::text;
 use andrew::text::fontconfig;
 
-fn main() {
-    let (display, mut event_queue) =
-        Display::connect_to_env().expect("Failed to connect to the wayland server.");
-    let env = Environment::from_display(&*display, &mut event_queue).unwrap();
+sctk::default_environment!(MyEnv, desktop);
 
-    let seat = env
-        .manager
-        .instantiate_range(1, 6, NewProxy::implement_dummy)
-        .unwrap();
+fn main() {
+    let (env, display, mut event_queue) = sctk::init_default_environment!(MyEnv, desktop)
+        .expect("Failed to initialize default Wayland environment.");
+
+    let _seat = env.manager.instantiate_range::<WlSeat>(1, 6).unwrap();
 
     let mut dimensions = (600, 400);
-    let surface = env
-        .compositor
-        .create_surface(NewProxy::implement_dummy)
-        .unwrap();
+    let surface = env.create_surface();
 
-    let next_action = Arc::new(Mutex::new(None::<WEvent>));
+    let mut next_action = None::<WEvent>;
 
-    let waction = next_action.clone();
-    let mut window = Window::<ConceptFrame>::init_from_env(&env, surface, dimensions, move |evt| {
-        let mut next_action = waction.lock().unwrap();
-        // Keep last event in priority order : Close > Configure > Refresh
-        let replace = match (&evt, &*next_action) {
-            (_, &None)
-            | (_, &Some(WEvent::Refresh))
-            | (&WEvent::Configure { .. }, &Some(WEvent::Configure { .. }))
-            | (&WEvent::Close, _) => true,
-            _ => false,
-        };
-        if replace {
-            *next_action = Some(evt);
-        }
-    })
-    .expect("Failed to create a window !");
+    let mut window = env
+        .create_window::<ConceptFrame, _>(surface, dimensions, move |evt, mut dispatch_data| {
+            let next_actn = dispatch_data.get::<Option<WEvent>>().unwrap();
+            // Keep last event in priority order : Close > Configure > Refresh
+            let replace = match (&evt, &*next_actn) {
+                (_, &None)
+                | (_, &Some(WEvent::Refresh))
+                | (&WEvent::Configure { .. }, &Some(WEvent::Configure { .. }))
+                | (&WEvent::Close, _) => true,
+                _ => false,
+            };
+            if replace {
+                *next_actn = Some(evt);
+            }
+        })
+        .expect("Failed to create a window !");
 
-    window.new_seat(&seat);
-
-    let mut pools = DoubleMemPool::new(&env.shm, || {}).expect("Failed to create a memory pool !");
+    let mut pools = DoubleMemPool::new(
+        env.get_global().expect("Failed to get `WlShm` global."),
+        |_| {},
+    )
+    .expect("Failed to create a memory pool !");
 
     let mut font_data = Vec::new();
     ::std::fs::File::open(
@@ -66,7 +59,11 @@ fn main() {
     .read_to_end(&mut font_data)
     .unwrap();
 
-    if !env.shell.needs_configure() {
+    if !env
+        .get_shell()
+        .expect("Expected environment to contain a shell.")
+        .needs_configure()
+    {
         if let Some(pool) = pools.pool() {
             redraw(pool, window.surface(), dimensions, &font_data);
         }
@@ -74,7 +71,7 @@ fn main() {
     }
 
     loop {
-        match next_action.lock().unwrap().take() {
+        match next_action.take() {
             Some(WEvent::Close) => break,
             Some(WEvent::Refresh) => {
                 window.refresh();
@@ -94,7 +91,9 @@ fn main() {
         }
 
         display.flush().unwrap();
-        event_queue.dispatch().unwrap();
+        event_queue
+            .dispatch(&mut next_action, |_, _, _| {})
+            .unwrap();
     }
 }
 

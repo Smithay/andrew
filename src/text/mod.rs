@@ -1,7 +1,7 @@
 /// A module that contains functions and objects relating to fontconfig
 pub mod fontconfig;
 
-use rusttype::{point, Font, Scale, SharedBytes, VMetrics};
+use rusttype::{point, Font, Scale, VMetrics};
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
@@ -35,17 +35,17 @@ pub fn load_font_file<P: Into<PathBuf>>(path: P) -> Vec<u8> {
 
 impl<'a> Text<'a> {
     /// Creates a new Text object
-    pub fn new<P: Into<SharedBytes<'a>>, T: Into<String>>(
+    pub fn new<T: Into<String>>(
         pos: (usize, usize),
         color: [u8; 4],
-        font_data: P,
+        font_data: &'a [u8],
         height: f32,
         width_scale: f32,
         text: T,
     ) -> Text<'a> {
         let text = text.into();
         // Create font
-        let font = Font::from_bytes(font_data).expect("Error constructing Font");
+        let font = Font::try_from_bytes(font_data).expect("Error constructing Font");
         // Create scale
         let scale = Scale {
             x: height * width_scale,
