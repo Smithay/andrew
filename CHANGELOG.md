@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.0 -- 2020-05-27
+
 - Raised MSRV to `1.41.0`.
 - Upgraded dependency versions.
 
