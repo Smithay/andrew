@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.3.1 -- 2020-10-23
+
+- Speed up rectangle drawing
+- Remove dependency on line_drawing
+- Update sctk dev dependency to 0.12
+
 ## 0.3.0 -- 2020-05-27
 
 - Raised MSRV to `1.41.0`.
