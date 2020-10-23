@@ -1,6 +1,5 @@
 //! Andrew is a crate for drawing objects
 #![warn(missing_docs)]
-extern crate line_drawing;
 extern crate rusttype;
 extern crate walkdir;
 extern crate xdg;
