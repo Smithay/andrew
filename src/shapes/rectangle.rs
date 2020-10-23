@@ -1,4 +1,5 @@
-use line::Line;
+use std::cmp::min;
+
 use Canvas;
 use Drawable;
 
@@ -50,7 +51,7 @@ impl Rectangle {
 
     fn draw_borders(&self, canvas: &mut Canvas) {
         if let Some(border) = self.border {
-            for i in 0..border.0 {
+            for i in 0..=border.0 {
                 let rounding_space = if let Some(round_size) = border.3 {
                     if i < round_size {
                         round_size
@@ -65,50 +66,60 @@ impl Rectangle {
                 };
 
                 // Top line
-                if border.2.contains(Sides::TOP) && canvas.width > rounding_space * 2 {
-                    Line::new(
-                        (self.pos.0 + rounding_space, self.pos.1 + i),
-                        (self.pos.0 + self.size.0 - rounding_space, self.pos.1 + i),
-                        border.1,
-                        false,
-                    )
-                    .draw(canvas);
+                if border.2.contains(Sides::TOP)
+                    && canvas.width > rounding_space * 2
+                    && self.pos.1 + i <= canvas.height - 1
+                {
+                    for x in self.pos.0 + rounding_space
+                        ..=min(
+                            self.pos.0 + self.size.0 - rounding_space - 1,
+                            canvas.width - 1,
+                        )
+                    {
+                        canvas.draw_point(x, self.pos.1 + i, border.1)
+                    }
                 }
                 // Bottom line
-                if border.2.contains(Sides::BOTTOM) && canvas.width > rounding_space * 2 {
-                    Line::new(
-                        (self.pos.0 + rounding_space, self.pos.1 + self.size.1 - i),
-                        (
-                            self.pos.0 + self.size.0 - rounding_space,
-                            self.pos.1 + self.size.1 - i,
-                        ),
-                        border.1,
-                        false,
-                    )
-                    .draw(canvas);
+                if border.2.contains(Sides::BOTTOM)
+                    && canvas.width > rounding_space * 2
+                    && self.pos.1 + self.size.1 - i - 1 <= canvas.height - 1
+                {
+                    for x in self.pos.0 + rounding_space
+                        ..=min(
+                            self.pos.0 + self.size.0 - rounding_space - 1,
+                            canvas.width - 1,
+                        )
+                    {
+                        canvas.draw_point(x, self.pos.1 + self.size.1 - i - 1, border.1)
+                    }
                 }
                 // Left line
-                if border.2.contains(Sides::LEFT) && canvas.height > rounding_space * 2 {
-                    Line::new(
-                        (self.pos.0 + i, self.pos.1 + rounding_space),
-                        (self.pos.0 + i, self.pos.1 + self.size.1 - rounding_space),
-                        border.1,
-                        false,
-                    )
-                    .draw(canvas);
+                if border.2.contains(Sides::LEFT)
+                    && canvas.height > rounding_space * 2
+                    && self.pos.0 + i <= canvas.width - 1
+                {
+                    for y in self.pos.1 + rounding_space
+                        ..=min(
+                            self.pos.1 + self.size.1 - rounding_space - 1,
+                            canvas.height - 1,
+                        )
+                    {
+                        canvas.draw_point(self.pos.0 + i, y, border.1)
+                    }
                 }
                 // Right line
-                if border.2.contains(Sides::RIGHT) && canvas.height > rounding_space * 2 {
-                    Line::new(
-                        (self.pos.0 + self.size.0 - i, self.pos.1 + rounding_space),
-                        (
-                            self.pos.0 + self.size.0 - i,
-                            self.pos.1 + self.size.1 - rounding_space,
-                        ),
-                        border.1,
-                        false,
-                    )
-                    .draw(canvas);
+                if border.2.contains(Sides::RIGHT)
+                    && canvas.height > rounding_space * 2
+                    && self.pos.0 + self.size.0 - i - 1 <= canvas.width - 1
+                {
+                    for y in self.pos.1 + rounding_space
+                        ..=min(
+                            self.pos.1 + self.size.1 - rounding_space - 1,
+                            canvas.height - 1,
+                        )
+                    {
+                        canvas.draw_point(self.pos.0 + self.size.0 - i - 1, y, border.1)
+                    }
                 }
             }
         }
@@ -117,8 +128,10 @@ impl Rectangle {
     fn draw_area(&self, canvas: &mut Canvas) {
         if let Some(fill) = self.fill {
             let (area_pos, area_size) = self.measure_area();
-            for y in area_pos.1..area_pos.1 + area_size.1 + 1 {
-                Line::new((area_pos.0, y), (area_pos.0 + area_size.0, y), fill, false).draw(canvas)
+            for y in area_pos.1..=min(area_pos.1 + area_size.1 - 1, canvas.height - 1) {
+                for x in area_pos.0..=min(area_pos.0 + area_size.0 - 1, canvas.width - 1) {
+                    canvas.draw_point(x, y, fill)
+                }
             }
         }
     }
