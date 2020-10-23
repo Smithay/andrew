@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["andrew"] = [{"text":"impl&lt;'a&gt; Unpin for Canvas&lt;'a&gt;","synthetic":true,"types":[]},{"text":"impl Unpin for Endian","synthetic":true,"types":[]},{"text":"impl Unpin for Line","synthetic":true,"types":[]},{"text":"impl Unpin for Sides","synthetic":true,"types":[]},{"text":"impl Unpin for Rectangle","synthetic":true,"types":[]},{"text":"impl&lt;'a&gt; Unpin for Text&lt;'a&gt;","synthetic":true,"types":[]},{"text":"impl Unpin for FontConfig","synthetic":true,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

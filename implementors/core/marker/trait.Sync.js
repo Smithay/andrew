@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["andrew"] = [{"text":"impl&lt;'a&gt; Sync for Canvas&lt;'a&gt;","synthetic":true,"types":[]},{"text":"impl Sync for Endian","synthetic":true,"types":[]},{"text":"impl Sync for Line","synthetic":true,"types":[]},{"text":"impl Sync for Sides","synthetic":true,"types":[]},{"text":"impl Sync for Rectangle","synthetic":true,"types":[]},{"text":"impl&lt;'a&gt; Sync for Text&lt;'a&gt;","synthetic":true,"types":[]},{"text":"impl Sync for FontConfig","synthetic":true,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

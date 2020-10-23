@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["andrew"] = [{"text":"impl&lt;'a&gt; Send for Canvas&lt;'a&gt;","synthetic":true,"types":[]},{"text":"impl Send for Endian","synthetic":true,"types":[]},{"text":"impl Send for Line","synthetic":true,"types":[]},{"text":"impl Send for Sides","synthetic":true,"types":[]},{"text":"impl Send for Rectangle","synthetic":true,"types":[]},{"text":"impl&lt;'a&gt; Send for Text&lt;'a&gt;","synthetic":true,"types":[]},{"text":"impl Send for FontConfig","synthetic":true,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

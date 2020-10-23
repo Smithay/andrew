@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["andrew"] = [{"text":"impl&lt;'a&gt; RefUnwindSafe for Canvas&lt;'a&gt;","synthetic":true,"types":[]},{"text":"impl RefUnwindSafe for Endian","synthetic":true,"types":[]},{"text":"impl RefUnwindSafe for Line","synthetic":true,"types":[]},{"text":"impl RefUnwindSafe for Sides","synthetic":true,"types":[]},{"text":"impl RefUnwindSafe for Rectangle","synthetic":true,"types":[]},{"text":"impl&lt;'a&gt; RefUnwindSafe for Text&lt;'a&gt;","synthetic":true,"types":[]},{"text":"impl RefUnwindSafe for FontConfig","synthetic":true,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
