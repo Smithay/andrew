@@ -12,21 +12,20 @@ use andrew::shapes::rectangle;
 use andrew::text;
 use andrew::text::fontconfig;
 
-sctk::default_environment!(MyEnv, desktop);
+sctk::default_environment!(TestExample, desktop);
 
 fn main() {
-    let (env, display, mut event_queue) = sctk::init_default_environment!(MyEnv, desktop)
-        .expect("Failed to initialize default Wayland environment.");
+    let (env, display, mut event_queue) = sctk::new_default_environment!(TestExample, desktop)
+        .expect("Unable to connect to a Wayland compositor");
 
     let _seat = env.manager.instantiate_range::<WlSeat>(1, 6).unwrap();
 
     let mut dimensions = (600, 400);
-    let surface = env.create_surface();
-
+    let surface = env.create_surface().detach();
     let mut next_action = None::<WEvent>;
 
     let mut window = env
-        .create_window::<ConceptFrame, _>(surface, dimensions, move |evt, mut dispatch_data| {
+        .create_window::<ConceptFrame, _>(surface, None, dimensions, move |evt, mut dispatch_data| {
             let next_actn = dispatch_data.get::<Option<WEvent>>().unwrap();
             // Keep last event in priority order : Close > Configure > Refresh
             let replace = match (&evt, &*next_actn) {
