@@ -25,20 +25,25 @@ fn main() {
     let mut next_action = None::<WEvent>;
 
     let mut window = env
-        .create_window::<ConceptFrame, _>(surface, None, dimensions, move |evt, mut dispatch_data| {
-            let next_actn = dispatch_data.get::<Option<WEvent>>().unwrap();
-            // Keep last event in priority order : Close > Configure > Refresh
-            let replace = match (&evt, &*next_actn) {
-                (_, &None)
-                | (_, &Some(WEvent::Refresh))
-                | (&WEvent::Configure { .. }, &Some(WEvent::Configure { .. }))
-                | (&WEvent::Close, _) => true,
-                _ => false,
-            };
-            if replace {
-                *next_actn = Some(evt);
-            }
-        })
+        .create_window::<ConceptFrame, _>(
+            surface,
+            None,
+            dimensions,
+            move |evt, mut dispatch_data| {
+                let next_actn = dispatch_data.get::<Option<WEvent>>().unwrap();
+                // Keep last event in priority order : Close > Configure > Refresh
+                let replace = match (&evt, &*next_actn) {
+                    (_, &None)
+                    | (_, &Some(WEvent::Refresh))
+                    | (&WEvent::Configure { .. }, &Some(WEvent::Configure { .. }))
+                    | (&WEvent::Close, _) => true,
+                    _ => false,
+                };
+                if replace {
+                    *next_actn = Some(evt);
+                }
+            },
+        )
         .expect("Failed to create a window !");
 
     let mut pools = DoubleMemPool::new(
@@ -48,15 +53,23 @@ fn main() {
     .expect("Failed to create a memory pool !");
 
     let mut font_data = Vec::new();
-    ::std::fs::File::open(
-        &fontconfig::FontConfig::new()
-            .unwrap()
-            .get_regular_family_fonts("sans")
-            .unwrap()[0],
-    )
-    .unwrap()
-    .read_to_end(&mut font_data)
-    .unwrap();
+    let font_filename = fontconfig::FontConfig::new()
+        .unwrap()
+        .get_regular_family_fonts("sans")
+        .unwrap()
+        .into_iter()
+        .filter(|path| {
+            use std::ffi::OsStr;
+            path.extension()
+                .map(|ext| ext == OsStr::new("otf") || ext == OsStr::new("ttf"))
+                .unwrap_or(false)
+        })
+        .next()
+        .unwrap();
+    ::std::fs::File::open(&font_filename)
+        .unwrap()
+        .read_to_end(&mut font_data)
+        .unwrap();
 
     if !env
         .get_shell()
