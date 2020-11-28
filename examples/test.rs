@@ -25,20 +25,25 @@ fn main() {
     let mut next_action = None::<WEvent>;
 
     let mut window = env
-        .create_window::<ConceptFrame, _>(surface, None, dimensions, move |evt, mut dispatch_data| {
-            let next_actn = dispatch_data.get::<Option<WEvent>>().unwrap();
-            // Keep last event in priority order : Close > Configure > Refresh
-            let replace = match (&evt, &*next_actn) {
-                (_, &None)
-                | (_, &Some(WEvent::Refresh))
-                | (&WEvent::Configure { .. }, &Some(WEvent::Configure { .. }))
-                | (&WEvent::Close, _) => true,
-                _ => false,
-            };
-            if replace {
-                *next_actn = Some(evt);
-            }
-        })
+        .create_window::<ConceptFrame, _>(
+            surface,
+            None,
+            dimensions,
+            move |evt, mut dispatch_data| {
+                let next_actn = dispatch_data.get::<Option<WEvent>>().unwrap();
+                // Keep last event in priority order : Close > Configure > Refresh
+                let replace = match (&evt, &*next_actn) {
+                    (_, &None)
+                    | (_, &Some(WEvent::Refresh))
+                    | (&WEvent::Configure { .. }, &Some(WEvent::Configure { .. }))
+                    | (&WEvent::Close, _) => true,
+                    _ => false,
+                };
+                if replace {
+                    *next_actn = Some(evt);
+                }
+            },
+        )
         .expect("Failed to create a window !");
 
     let mut pools = DoubleMemPool::new(
