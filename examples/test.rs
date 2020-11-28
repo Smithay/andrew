@@ -48,15 +48,23 @@ fn main() {
     .expect("Failed to create a memory pool !");
 
     let mut font_data = Vec::new();
-    ::std::fs::File::open(
-        &fontconfig::FontConfig::new()
-            .unwrap()
-            .get_regular_family_fonts("sans")
-            .unwrap()[0],
-    )
-    .unwrap()
-    .read_to_end(&mut font_data)
-    .unwrap();
+    let font_filename = fontconfig::FontConfig::new()
+        .unwrap()
+        .get_regular_family_fonts("sans")
+        .unwrap()
+        .into_iter()
+        .filter(|path| {
+            use std::ffi::OsStr;
+            path.extension()
+                .map(|ext| ext == OsStr::new("otf") || ext == OsStr::new("ttf"))
+                .unwrap_or(false)
+        })
+        .next()
+        .unwrap();
+    ::std::fs::File::open(&font_filename)
+        .unwrap()
+        .read_to_end(&mut font_data)
+        .unwrap();
 
     if !env
         .get_shell()
