@@ -82,7 +82,7 @@ impl Rectangle {
                 // Bottom line
                 if border.2.contains(Sides::BOTTOM)
                     && canvas.width > rounding_space * 2
-                    && self.pos.1 + self.size.1 - i - 1 <= canvas.height - 1
+                    && self.pos.1 + self.size.1 - i - 1 < canvas.height
                 {
                     for x in self.pos.0 + rounding_space
                         ..=min(
@@ -110,7 +110,7 @@ impl Rectangle {
                 // Right line
                 if border.2.contains(Sides::RIGHT)
                     && canvas.height > rounding_space * 2
-                    && self.pos.0 + self.size.0 - i - 1 <= canvas.width - 1
+                    && self.pos.0 + self.size.0 - i - 1 < canvas.width
                 {
                     for y in self.pos.1 + rounding_space
                         ..=min(
