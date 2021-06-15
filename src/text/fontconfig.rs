@@ -59,10 +59,7 @@ impl FontConfig {
     pub fn new() -> Result<FontConfig, ()> {
         let location = get_config().ok_or(())?;
         let data = parse_config(&location);
-        Ok(FontConfig {
-            location,
-            data,
-        })
+        Ok(FontConfig { location, data })
     }
 
     /// Returns the location of the fontconfig config file being used
