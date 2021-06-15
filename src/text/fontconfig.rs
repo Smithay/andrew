@@ -41,7 +41,7 @@ fn parse_config(path: &Path) -> Vec<(Vec<String>, String)> {
             Ok(XmlEvent::EndElement { .. }) => {
                 tracking_tags.pop();
             }
-            Err(e) => panic!(e),
+            Err(e) => panic!("{}", e),
             _ => {}
         }
     }
@@ -60,7 +60,7 @@ impl FontConfig {
         let location = get_config().ok_or(())?;
         let data = parse_config(&location);
         Ok(FontConfig {
-            location: location.to_path_buf(),
+            location,
             data,
         })
     }
@@ -134,7 +134,7 @@ impl FontConfig {
             let mut buf = String::new();
             file.read_to_string(&mut buf)?;
 
-            for line in buf.lines().filter(|l| l.find("medium-r-normal").is_some()) {
+            for line in buf.lines().filter(|l| l.contains("medium-r-normal")) {
                 if let Some(split) = line.find(' ') {
                     let name = line[..split].to_string();
                     let settings = line[split..].to_string();

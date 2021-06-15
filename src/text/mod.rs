@@ -56,10 +56,10 @@ impl<'a> Text<'a> {
         Text {
             pos,
             color,
-            text: text.clone(),
+            text,
+            font,
             scale,
             v_metrics,
-            font,
         }
     }
 

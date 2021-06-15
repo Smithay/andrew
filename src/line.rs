@@ -154,13 +154,13 @@ fn xiaolin_wu(mut x0: f32, mut y0: f32, mut x1: f32, mut y1: f32) -> Vec<(usize,
         for x in x0 as usize + 1..=x1 as usize - 1 {
             points.push((intery as usize, x, 1.0 - intery.fract()));
             points.push((intery as usize + 1, x, intery.fract()));
-            intery = intery + gradient;
+            intery += gradient;
         }
     } else {
         for x in x0 as usize + 1..=x1 as usize - 1 {
             points.push((x, intery as usize, 1.0 - intery.fract()));
             points.push((x, intery as usize + 1, intery.fract()));
-            intery = intery + gradient;
+            intery += gradient;
         }
     }
     points

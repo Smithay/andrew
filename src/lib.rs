@@ -105,7 +105,7 @@ impl<'a> Canvas<'a> {
                     let new_color = (f32::from(self.buffer[base + c]) + color_diff) as u8;
                     self.buffer[base + c] = new_color as u8;
                 }
-                self.buffer[base + 3] = 255 as u8;
+                self.buffer[base + 3] = 255_u8;
             }
         } else if color[0] == 255 {
             self.buffer[base] = color[0];
@@ -120,7 +120,7 @@ impl<'a> Canvas<'a> {
                 let new_color = (f32::from(self.buffer[base + c]) + color_diff) as u8;
                 self.buffer[base + c] = new_color as u8;
             }
-            self.buffer[base] = 255 as u8;
+            self.buffer[base] = 255_u8;
         }
     }
 
